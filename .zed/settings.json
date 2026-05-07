@@ -1,0 +1,7 @@
+{
+  "languages": {
+    "TypeScript": {
+      "formatter": "prettier"
+    }
+  }
+}
