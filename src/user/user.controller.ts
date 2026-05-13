@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   Post,
   Put,
   UseGuards,
@@ -42,11 +43,15 @@ export class UserController {
 
   @Get('user')
   @UseGuards(AuthGuard)
-  currentUser(@User() user: UserEntity): UserResponseInterface | null {
+  currentUser(
+    @User() user: UserEntity,
+    @Headers('authorization') auth: string,
+  ): UserResponseInterface | null {
     if (!user) {
       return null;
     }
-    return this.userService.buildUserResponse(user);
+    const token = auth?.split(' ')[1];
+    return this.userService.buildUserResponse(user, token);
   }
 
   @Put('user')

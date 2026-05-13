@@ -89,7 +89,7 @@ export class UserService {
       );
 
     Object.assign(user, updateUserDto);
-    return this.userRepository.save(user);
+    return await this.userRepository.save(user);
   }
 
   generateJwt(user: UserEntity): string {
@@ -99,11 +99,11 @@ export class UserService {
     );
   }
 
-  buildUserResponse(user: UserEntity): UserResponseInterface {
+  buildUserResponse(user: UserEntity, token?: string): UserResponseInterface {
     return {
       user: {
         ...user,
-        token: this.generateJwt(user),
+        token: token ?? this.generateJwt(user),
       },
     };
   }
