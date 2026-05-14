@@ -22,6 +22,7 @@ import {
   ArticleResponseInterface,
   ArticlesResponseInterface,
 } from '@app/article/types/articleResponse.interfaces';
+import type { ArticlesQueryInterface } from '@app/article/types/article.interfaces';
 import { UpdateArticleDto } from '@app/article/dto/updateArticle.dto';
 import { CreateArticleDto } from '@app/article/dto/createArticle.dto';
 
@@ -32,7 +33,7 @@ export class ArticleController {
   @Get()
   async getArticles(
     @User('id') currentUserId: number,
-    @Query() query: any,
+    @Query() query: ArticlesQueryInterface,
   ): Promise<ArticlesResponseInterface> {
     return await this.articleService.getArticles(currentUserId, query);
   }
@@ -84,6 +85,32 @@ export class ArticleController {
       updateArticleDto,
     );
 
+    return this.articleService.buildArticleResponse(article);
+  }
+
+  @Post(':slug/favorite')
+  @UseGuards(AuthGuard)
+  async addArticleToFavorites(
+    @User('id') currentUserId: number,
+    @Param('slug') slug: string,
+  ) {
+    const article = await this.articleService.addArticleToFavorites(
+      currentUserId,
+      slug,
+    );
+    return this.articleService.buildArticleResponse(article);
+  }
+
+  @Delete(':slug/favorite')
+  @UseGuards(AuthGuard)
+  async deleteArticleFromFavorites(
+    @User('id') currentUserId: number,
+    @Param('slug') slug: string,
+  ) {
+    const article = await this.articleService.deleteArticleFromFavorites(
+      currentUserId,
+      slug,
+    );
     return this.articleService.buildArticleResponse(article);
   }
 }

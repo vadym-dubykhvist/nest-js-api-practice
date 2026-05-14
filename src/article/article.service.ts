@@ -12,6 +12,7 @@ import {
   ArticleResponseInterface,
   ArticlesResponseInterface,
 } from '@app/article/types/articleResponse.interfaces';
+import { ArticlesQueryInterface } from '@app/article/types/article.interfaces';
 
 @Injectable()
 export class ArticleService {
@@ -25,7 +26,7 @@ export class ArticleService {
 
   async getArticles(
     currentUserId: number,
-    query: any,
+    query: ArticlesQueryInterface,
   ): Promise<ArticlesResponseInterface> {
     const queryBuilder = this.dataSource
       .getRepository(ArticleEntity)
@@ -49,6 +50,26 @@ export class ArticleService {
       }
     }
 
+    if (query.favorited) {
+      const author = await this.userRepository.findOne({
+        where: { username: query.favorited },
+        relations: ['favorites'],
+      });
+
+      if (!author) {
+        return { articles: [], articlesCount: 0 };
+      }
+      const favoritedIds = author.favorites.map((favorited) => favorited.id);
+
+      if (favoritedIds.length > 0) {
+        queryBuilder.andWhere('articles.id IN (:...favoritedIds)', {
+          favoritedIds,
+        });
+      } else {
+        queryBuilder.andWhere('1=0');
+      }
+    }
+
     queryBuilder.orderBy('articles.createdAt', 'DESC');
 
     const articlesCount = await queryBuilder.getCount();
@@ -61,9 +82,28 @@ export class ArticleService {
       queryBuilder.offset(query.offset);
     }
 
-    const articles = await queryBuilder.getMany();
+    let favoritedArticlesIds: number[] = [];
 
-    return { articles, articlesCount };
+    if (currentUserId) {
+      const currentUser = await this.userRepository.findOne({
+        where: { id: currentUserId },
+        relations: ['favorites'],
+      });
+
+      if (currentUser) {
+        favoritedArticlesIds = currentUser.favorites.map(
+          (favorite) => favorite.id,
+        );
+      }
+    }
+
+    const articles = await queryBuilder.getMany();
+    const articlesWithFavorited = articles.map((article) => ({
+      ...article,
+      favorited: favoritedArticlesIds.includes(article.id),
+    }));
+
+    return { articles: articlesWithFavorited, articlesCount };
   }
 
   async createArticle(
@@ -132,6 +172,68 @@ export class ArticleService {
     }
 
     return await this.articleRepository.save(article);
+  }
+
+  async addArticleToFavorites(
+    currentUserId: number,
+    slug: string,
+  ): Promise<ArticleEntity> {
+    const article = await this.getArticle(slug);
+    const user = await this.userRepository.findOne({
+      where: { id: currentUserId },
+      relations: ['favorites'],
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const isFavorited =
+      user.favorites.findIndex((favArt) => favArt.id === article.id) !== -1;
+
+    if (isFavorited) {
+      throw new HttpException(
+        'Article already favorited',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    user.favorites.push(article);
+    article.favoritesCount++;
+    await this.userRepository.save(user);
+    await this.articleRepository.save(article);
+
+    return article;
+  }
+
+  async deleteArticleFromFavorites(
+    currentUserId: number,
+    slug: string,
+  ): Promise<ArticleEntity> {
+    const article = await this.getArticle(slug);
+    const user = await this.userRepository.findOne({
+      where: { id: currentUserId },
+      relations: ['favorites'],
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const articleIndex = user.favorites.findIndex(
+      (favArt) => favArt.id === article.id,
+    );
+
+    if (!(articleIndex >= 0)) {
+      throw new HttpException('Article not favorited', HttpStatus.BAD_REQUEST);
+    }
+
+    user.favorites.splice(articleIndex, 1);
+    article.favoritesCount--;
+    await this.userRepository.save(user);
+    await this.articleRepository.save(article);
+
+    return article;
   }
 
   buildArticleResponse(article: ArticleEntity): ArticleResponseInterface {
