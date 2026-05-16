@@ -22,7 +22,10 @@ import {
   ArticleResponseInterface,
   ArticlesResponseInterface,
 } from '@app/article/types/articleResponse.interfaces';
-import type { ArticlesQueryInterface } from '@app/article/types/article.interfaces';
+import type {
+  ArticlesFeedQueryInterface,
+  ArticlesQueryInterface,
+} from '@app/article/types/article.interfaces';
 import { UpdateArticleDto } from '@app/article/dto/updateArticle.dto';
 import { CreateArticleDto } from '@app/article/dto/createArticle.dto';
 
@@ -36,6 +39,15 @@ export class ArticleController {
     @Query() query: ArticlesQueryInterface,
   ): Promise<ArticlesResponseInterface> {
     return await this.articleService.getArticles(currentUserId, query);
+  }
+
+  @Get('feed')
+  @UseGuards(AuthGuard)
+  async getFeed(
+    @User('id') currentUserId: number,
+    @Query() query: ArticlesFeedQueryInterface,
+  ): Promise<ArticlesResponseInterface> {
+    return await this.articleService.getFeed(currentUserId, query);
   }
 
   @Post()

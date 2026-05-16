@@ -3,5 +3,10 @@ export interface ArticlesQueryInterface {
   author?: string;
   limit?: number;
   offset?: number;
-  favorited: string;
+  favorited?: string;
+}
+
+export interface ArticlesFeedQueryInterface {
+  limit?: number;
+  offset?: number;
 }
