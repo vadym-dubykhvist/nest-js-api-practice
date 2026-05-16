@@ -28,12 +28,66 @@ import type {
 import { UpdateArticleDto } from '@app/article/dto/updateArticle.dto';
 import { CreateArticleDto } from '@app/article/dto/createArticle.dto';
 import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
+import {
+  ApiBody,
+  ApiExtraModels,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiSecurity,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 
+@ApiTags('articles')
+@ApiExtraModels(CreateArticleDto, UpdateArticleDto)
 @Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'List articles',
+    description:
+      'Returns articles ordered from newest to oldest, optionally filtered by query parameters.',
+  })
+  @ApiQuery({
+    name: 'tag',
+    required: false,
+    description: 'Filter articles by tag.',
+    example: 'nestjs',
+  })
+  @ApiQuery({
+    name: 'author',
+    required: false,
+    description: 'Filter articles by author username.',
+    example: 'john_doe',
+  })
+  @ApiQuery({
+    name: 'favorited',
+    required: false,
+    description: 'Filter articles favorited by username.',
+    example: 'john_doe',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Maximum number of articles to return.',
+    example: 20,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'offset',
+    required: false,
+    description: 'Number of articles to skip.',
+    example: 0,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Articles returned.',
+  })
   async getArticles(
     @User('id') currentUserId: number,
     @Query() query: ArticlesQueryInterface,
@@ -42,7 +96,35 @@ export class ArticleController {
   }
 
   @Get('feed')
+  @ApiOperation({
+    summary: 'Get article feed',
+    description:
+      'Returns articles from users followed by the authenticated user.',
+  })
   @UseGuards(AuthGuard)
+  @ApiSecurity('Token')
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Maximum number of articles to return.',
+    example: 20,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'offset',
+    required: false,
+    description: 'Number of articles to skip.',
+    example: 0,
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Feed articles returned.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
   async getFeed(
     @User('id') currentUserId: number,
     @Query() query: ArticlesFeedQueryInterface,
@@ -51,7 +133,34 @@ export class ArticleController {
   }
 
   @Post()
+  @ApiOperation({
+    summary: 'Create article',
+    description: 'Creates an article owned by the authenticated user.',
+  })
   @UseGuards(AuthGuard)
+  @ApiSecurity('Token')
+  @ApiBody({
+    description: 'Article creation payload wrapped in an article object.',
+    schema: {
+      type: 'object',
+      required: ['article'],
+      properties: {
+        article: { $ref: getSchemaPath(CreateArticleDto) },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Article created and returned.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'Validation failed for one or more article fields.',
+  })
   @UsePipes(new BackendValidationPipe())
   async createArticle(
     @User() currentUser: UserEntity,
@@ -66,6 +175,23 @@ export class ArticleController {
   }
 
   @Get(':slug')
+  @ApiOperation({
+    summary: 'Get article',
+    description: 'Returns a single article by slug.',
+  })
+  @ApiParam({
+    name: 'slug',
+    description: 'Unique article slug.',
+    example: 'how-to-build-a-nestjs-api-k9x4d',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Article returned.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Article was not found.',
+  })
   async getArticle(
     @Param('slug') slug: string,
   ): Promise<ArticleResponseInterface> {
@@ -75,7 +201,33 @@ export class ArticleController {
   }
 
   @Delete(':slug')
+  @ApiOperation({
+    summary: 'Delete article',
+    description: 'Deletes an article owned by the authenticated user.',
+  })
   @UseGuards(AuthGuard)
+  @ApiSecurity('Token')
+  @ApiParam({
+    name: 'slug',
+    description: 'Unique article slug.',
+    example: 'how-to-build-a-nestjs-api-k9x4d',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Article deleted.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Authenticated user is not the article author.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Article was not found.',
+  })
   async deleteArticle(
     @Param('slug') slug: string,
     @User('id') currentUserId: number,
@@ -84,7 +236,47 @@ export class ArticleController {
   }
 
   @Put(':slug')
+  @ApiOperation({
+    summary: 'Update article',
+    description: 'Updates an article owned by the authenticated user.',
+  })
   @UseGuards(AuthGuard)
+  @ApiSecurity('Token')
+  @ApiParam({
+    name: 'slug',
+    description: 'Unique article slug.',
+    example: 'how-to-build-a-nestjs-api-k9x4d',
+  })
+  @ApiBody({
+    description: 'Article update payload wrapped in an article object.',
+    schema: {
+      type: 'object',
+      required: ['article'],
+      properties: {
+        article: { $ref: getSchemaPath(UpdateArticleDto) },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Article updated and returned.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Authenticated user is not the article author.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Article was not found.',
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'Validation failed for one or more article fields.',
+  })
   @UsePipes(new BackendValidationPipe())
   async updateArticle(
     @Param('slug') slug: string,
@@ -101,7 +293,33 @@ export class ArticleController {
   }
 
   @Post(':slug/favorite')
+  @ApiOperation({
+    summary: 'Favorite article',
+    description: 'Adds the article to the authenticated user favorites.',
+  })
   @UseGuards(AuthGuard)
+  @ApiSecurity('Token')
+  @ApiParam({
+    name: 'slug',
+    description: 'Unique article slug.',
+    example: 'how-to-build-a-nestjs-api-k9x4d',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Article added to favorites and returned.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Article is already favorited.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Article or user was not found.',
+  })
   async addArticleToFavorites(
     @User('id') currentUserId: number,
     @Param('slug') slug: string,
@@ -114,7 +332,33 @@ export class ArticleController {
   }
 
   @Delete(':slug/favorite')
+  @ApiOperation({
+    summary: 'Unfavorite article',
+    description: 'Removes the article from the authenticated user favorites.',
+  })
   @UseGuards(AuthGuard)
+  @ApiSecurity('Token')
+  @ApiParam({
+    name: 'slug',
+    description: 'Unique article slug.',
+    example: 'how-to-build-a-nestjs-api-k9x4d',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Article removed from favorites and returned.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Article is not favorited.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Article or user was not found.',
+  })
   async deleteArticleFromFavorites(
     @User('id') currentUserId: number,
     @Param('slug') slug: string,
