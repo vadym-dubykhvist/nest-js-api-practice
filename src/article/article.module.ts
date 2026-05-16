@@ -5,12 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ArticleEntity } from '@app/article/article.entity';
 import { UserEntity } from '@app/user/user.entity';
 import { FollowEntity } from '@app/profile/follow.entity';
+import { SharedModule } from '@app/shared/shared.module';
+import { AuthGuard } from '@app/user/guards/auth.guard';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ArticleEntity, UserEntity, FollowEntity]),
+    SharedModule,
   ],
   controllers: [ArticleController],
-  providers: [ArticleService],
+  providers: [ArticleService, AuthGuard],
 })
 export class ArticleModule {}

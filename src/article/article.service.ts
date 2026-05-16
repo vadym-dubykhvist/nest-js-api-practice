@@ -1,7 +1,7 @@
 import slugify from 'slugify';
 import { DataSource, DeleteResult, Repository } from 'typeorm';
 
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { UpdateArticleDto } from '@app/article/dto/updateArticle.dto';
@@ -17,6 +17,7 @@ import {
   ArticlesQueryInterface,
 } from '@app/article/types/article.interfaces';
 import { FollowEntity } from '@app/profile/follow.entity';
+import { ExceptionService } from '@app/shared/services/exception.service';
 
 @Injectable()
 export class ArticleService {
@@ -28,6 +29,7 @@ export class ArticleService {
     @InjectRepository(FollowEntity)
     private readonly followRepository: Repository<FollowEntity>,
     private dataSource: DataSource,
+    private readonly exceptionService: ExceptionService,
   ) {}
 
   async getArticles(
@@ -174,7 +176,11 @@ export class ArticleService {
     const article = await this.articleRepository.findOne({ where: { slug } });
 
     if (!article) {
-      throw new HttpException('Article not found', HttpStatus.NOT_FOUND);
+      this.exceptionService.throwHttpException(
+        'article',
+        'not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     return article;
@@ -187,8 +193,9 @@ export class ArticleService {
     const article = await this.getArticle(slug);
 
     if (article.author.id !== currentUserId) {
-      throw new HttpException(
-        'You are not an author of this article',
+      this.exceptionService.throwHttpException(
+        'article',
+        'you are not an author of this article',
         HttpStatus.FORBIDDEN,
       );
     }
@@ -204,8 +211,9 @@ export class ArticleService {
     const article = await this.getArticle(slug);
 
     if (article.author.id !== currentUserId) {
-      throw new HttpException(
-        'You are not an author of this article',
+      this.exceptionService.throwHttpException(
+        'article',
+        'you are not an author of this article',
         HttpStatus.FORBIDDEN,
       );
     }
@@ -230,15 +238,20 @@ export class ArticleService {
     });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      this.exceptionService.throwHttpException(
+        'user',
+        'not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const isFavorited =
       user.favorites.findIndex((favArt) => favArt.id === article.id) !== -1;
 
     if (isFavorited) {
-      throw new HttpException(
-        'Article already favorited',
+      this.exceptionService.throwHttpException(
+        'article',
+        'already favorited',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -262,7 +275,11 @@ export class ArticleService {
     });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      this.exceptionService.throwHttpException(
+        'user',
+        'not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const articleIndex = user.favorites.findIndex(
@@ -270,7 +287,11 @@ export class ArticleService {
     );
 
     if (!(articleIndex >= 0)) {
-      throw new HttpException('Article not favorited', HttpStatus.BAD_REQUEST);
+      this.exceptionService.throwHttpException(
+        'article',
+        'not favorited',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     user.favorites.splice(articleIndex, 1);

@@ -2,13 +2,15 @@ import { ExpressRequest } from '@app/types/expressRequest.interface';
 import {
   CanActivate,
   ExecutionContext,
-  HttpException,
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import { ExceptionService } from '@app/shared/services/exception.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+  constructor(private readonly exceptionService: ExceptionService) {}
+
   canActivate(ctx: ExecutionContext): boolean {
     const request = ctx.switchToHttp().getRequest<ExpressRequest>();
 
@@ -16,6 +18,10 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
+    this.exceptionService.throwHttpException(
+      'auth',
+      'not authorized',
+      HttpStatus.UNAUTHORIZED,
+    );
   }
 }

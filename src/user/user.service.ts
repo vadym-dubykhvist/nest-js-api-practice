@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
@@ -10,28 +10,38 @@ import { CreateUserDto } from '@app/user/dto/createUser.dto';
 import { LoginUserDto } from '@app/user/dto/loginUser.dto';
 import { UserEntity } from '@app/user/user.entity';
 import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
+import { ExceptionService } from '@app/shared/services/exception.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    private readonly exceptionService: ExceptionService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const isUserExists = await this.userRepository.findOne({
-      where: [
-        { email: createUserDto.email },
-        { username: createUserDto.username },
-      ],
+    const errorResponse = {
+      errors: {},
+    };
+    const isUserEmailExists = await this.userRepository.findOne({
+      where: { email: createUserDto.email },
+    });
+    const isUsernameExists = await this.userRepository.findOne({
+      where: { username: createUserDto.username },
     });
 
-    if (isUserExists) {
-      throw new HttpException(
-        'Email or username already exists',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+    if (isUserEmailExists) {
+      errorResponse.errors['email'] = ['has already been taken'];
     }
+    if (isUsernameExists) {
+      errorResponse.errors['username'] = ['has already been taken'];
+    }
+
+    if (Object.keys(errorResponse.errors).length) {
+      this.exceptionService.throwHttpExceptionWithErrors(errorResponse.errors);
+    }
+
     const newUser = new UserEntity();
 
     Object.assign(newUser, createUserDto);
@@ -46,9 +56,9 @@ export class UserService {
     });
 
     if (!existingUser) {
-      throw new HttpException(
-        'User not found',
-        HttpStatus.UNPROCESSABLE_ENTITY,
+      this.exceptionService.throwHttpException(
+        'email or password',
+        'is invalid',
       );
     }
 
@@ -58,9 +68,9 @@ export class UserService {
     );
 
     if (!isPasswordValid) {
-      throw new HttpException(
-        'Invalid password',
-        HttpStatus.UNPROCESSABLE_ENTITY,
+      this.exceptionService.throwHttpException(
+        'email or password',
+        'is invalid',
       );
     }
 
@@ -82,11 +92,7 @@ export class UserService {
     updateUserDto: UpdateUserDto,
   ): Promise<UserEntity> {
     const user = await this.findById(id);
-    if (!user)
-      throw new HttpException(
-        'User not found',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+    if (!user) this.exceptionService.throwHttpException('user', 'not found');
 
     Object.assign(user, updateUserDto);
     return await this.userRepository.save(user);

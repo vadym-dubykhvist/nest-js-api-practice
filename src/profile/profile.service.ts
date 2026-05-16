@@ -1,10 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import type { ProfileResponseInterface } from '@app/profile/types/profileResponse.interfaces';
 import { ProfileType } from '@app/profile/types/profile.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@app/user/user.entity';
 import { Repository } from 'typeorm';
 import { FollowEntity } from '@app/profile/follow.entity';
+import { ExceptionService } from '@app/shared/services/exception.service';
 
 @Injectable()
 export class ProfileService {
@@ -13,6 +14,7 @@ export class ProfileService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(FollowEntity)
     private readonly followRepository: Repository<FollowEntity>,
+    private readonly exceptionService: ExceptionService,
   ) {}
 
   async getProfile(
@@ -24,7 +26,11 @@ export class ProfileService {
     });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      this.exceptionService.throwHttpException(
+        'user',
+        'not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const follow =
@@ -52,11 +58,19 @@ export class ProfileService {
     });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      this.exceptionService.throwHttpException(
+        'user',
+        'not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     if (currentUserId === user.id) {
-      throw new HttpException('Cannot follow yourself', HttpStatus.BAD_REQUEST);
+      this.exceptionService.throwHttpException(
+        'user',
+        'cannot follow yourself',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const follow = await this.followRepository.findOne({
@@ -67,8 +81,9 @@ export class ProfileService {
     });
 
     if (follow) {
-      throw new HttpException(
-        'Already following this user',
+      this.exceptionService.throwHttpException(
+        'profile',
+        'already following this user',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -95,11 +110,19 @@ export class ProfileService {
     });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      this.exceptionService.throwHttpException(
+        'user',
+        'not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     if (currentUserId === user.id) {
-      throw new HttpException('Cannot follow yourself', HttpStatus.BAD_REQUEST);
+      this.exceptionService.throwHttpException(
+        'user',
+        'cannot follow yourself',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const follow = await this.followRepository.findOne({
@@ -110,8 +133,9 @@ export class ProfileService {
     });
 
     if (!follow) {
-      throw new HttpException(
-        'You are not following this user',
+      this.exceptionService.throwHttpException(
+        'profile',
+        'you are not following this user',
         HttpStatus.BAD_REQUEST,
       );
     }
