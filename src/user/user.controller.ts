@@ -3,8 +3,8 @@ import {
   Controller,
   Get,
   Headers,
+  Patch,
   Post,
-  Put,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -126,7 +126,7 @@ export class UserController {
     return this.userService.buildUserResponse(user, token);
   }
 
-  @Put('user')
+  @Patch('user')
   @ApiOperation({
     summary: 'Update current user',
     description: 'Updates fields on the authenticated user profile.',

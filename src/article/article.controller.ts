@@ -6,8 +6,8 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
   UseGuards,
   UsePipes,
@@ -235,7 +235,7 @@ export class ArticleController {
     return await this.articleService.deleteArticle(slug, currentUserId);
   }
 
-  @Put(':slug')
+  @Patch(':slug')
   @ApiOperation({
     summary: 'Update article',
     description: 'Updates an article owned by the authenticated user.',
