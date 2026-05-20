@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateArticleDto {
@@ -29,4 +29,12 @@ export class CreateArticleDto {
     type: [String],
   })
   readonly tagList?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Event ID this article is linked to.',
+    example: 1,
+  })
+  @IsOptional()
+  @IsInt()
+  readonly eventId?: number;
 }

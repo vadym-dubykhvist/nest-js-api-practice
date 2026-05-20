@@ -17,6 +17,7 @@ import {
   ArticlesQueryInterface,
 } from '@app/article/types/article.interfaces';
 import { FollowEntity } from '@app/profile/follow.entity';
+import { EventEntity } from '@app/event/event.entity';
 import { ExceptionService } from '@app/shared/services/exception.service';
 
 @Injectable()
@@ -28,6 +29,8 @@ export class ArticleService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(FollowEntity)
     private readonly followRepository: Repository<FollowEntity>,
+    @InjectRepository(EventEntity)
+    private readonly eventRepository: Repository<EventEntity>,
     private dataSource: DataSource,
     private readonly exceptionService: ExceptionService,
   ) {}
@@ -168,6 +171,21 @@ export class ArticleService {
     article.slug = this.getSlug(createArticleDto.title);
 
     article.author = currentUser;
+    article.event = null;
+
+    if (typeof createArticleDto.eventId === 'number') {
+      const event = await this.eventRepository.findOneBy({
+        id: createArticleDto.eventId,
+      });
+      if (!event) {
+        this.exceptionService.throwHttpException(
+          'event',
+          'not found',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      article.event = event;
+    }
 
     return await this.articleRepository.save(article);
   }
@@ -222,6 +240,22 @@ export class ArticleService {
 
     if (updateArticleDto.title) {
       article.slug = this.getSlug(updateArticleDto.title);
+    }
+
+    if (updateArticleDto.eventId === null) {
+      article.event = null;
+    } else if (typeof updateArticleDto.eventId === 'number') {
+      const event = await this.eventRepository.findOneBy({
+        id: updateArticleDto.eventId,
+      });
+      if (!event) {
+        this.exceptionService.throwHttpException(
+          'event',
+          'not found',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      article.event = event;
     }
 
     return await this.articleRepository.save(article);

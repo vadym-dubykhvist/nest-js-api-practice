@@ -1,4 +1,5 @@
 import { UserEntity } from '@app/user/user.entity';
+import { EventEntity } from '@app/event/event.entity';
 import {
   BeforeUpdate,
   Column,
@@ -43,4 +44,7 @@ export class ArticleEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.articles, { eager: true })
   author: UserEntity;
+
+  @ManyToOne(() => EventEntity, { nullable: true, onDelete: 'SET NULL' })
+  event: EventEntity | null;
 }

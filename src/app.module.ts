@@ -10,6 +10,7 @@ import { AuthMiddleware } from '@app/user/middlewares/auth.middleware';
 import { ArticleModule } from '@app/article/article.module';
 import { ProfileModule } from '@app/profile/profile.module';
 import { CommentModule } from '@app/comment/comment.module';
+import { EventModule } from '@app/event/event.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CommentModule } from '@app/comment/comment.module';
     ArticleModule,
     ProfileModule,
     CommentModule,
+    EventModule,
   ],
   controllers: [AppController],
   providers: [AppService],

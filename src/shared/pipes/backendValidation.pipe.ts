@@ -17,8 +17,8 @@ export class BackendValidationPipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata): Promise<unknown> {
     if (!metadata.metatype) return value;
 
-    const primitiveTypes: Function[] = [String, Boolean, Number, Array, Object];
-    if (primitiveTypes.includes(metadata.metatype as Function)) return value;
+    const primitiveTypes: unknown[] = [String, Boolean, Number, Array, Object];
+    if (primitiveTypes.includes(metadata.metatype)) return value;
 
     const object = plainToClass(
       metadata.metatype as ClassConstructor<object>,

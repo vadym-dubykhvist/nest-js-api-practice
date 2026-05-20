@@ -1,5 +1,5 @@
-import { IsNotEmpty } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateArticleDto {
   @ApiProperty({
@@ -22,4 +22,13 @@ export class UpdateArticleDto {
   })
   @IsNotEmpty()
   readonly description: string;
+
+  @ApiPropertyOptional({
+    description: 'Event ID this article is linked to. Pass null to unlink.',
+    example: 1,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsInt()
+  readonly eventId?: number | null;
 }
