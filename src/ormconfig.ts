@@ -2,13 +2,14 @@ import { DataSourceOptions } from 'typeorm';
 
 const config: DataSourceOptions = {
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'nestjspractice',
-  password: '18092002',
-  database: 'nestjspractice',
+  host: process.env.DB_HOST ?? 'localhost',
+  port: parseInt(process.env.DB_PORT ?? '5432', 10),
+  username: process.env.DB_USERNAME ?? 'nestjspractice',
+  password: process.env.DB_PASSWORD ?? '18092002',
+  database: process.env.DB_NAME ?? 'nestjspractice',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  synchronize: false,
+  synchronize: process.env.DB_SYNCHRONIZE === 'true',
+  dropSchema: process.env.DB_DROP_SCHEMA === 'true',
   migrations: [__dirname + '/migrations/**/*{.ts, .js}'],
 };
 
