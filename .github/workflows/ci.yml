@@ -47,7 +47,7 @@ jobs:
 
       - run: pnpm test:e2e
         env:
-          DB_HOST: 127.0.0.1
+          DB_HOST: localhost
           DB_PORT: 5433
           DB_USERNAME: test
           DB_PASSWORD: test
