@@ -158,6 +158,10 @@ export class ArticleController {
     description: 'Missing or invalid authorization token.',
   })
   @ApiResponse({
+    status: 404,
+    description: 'Linked event (eventId) was not found.',
+  })
+  @ApiResponse({
     status: 422,
     description: 'Validation failed for one or more article fields.',
   })
@@ -271,7 +275,7 @@ export class ArticleController {
   })
   @ApiResponse({
     status: 404,
-    description: 'Article was not found.',
+    description: 'Article or linked event (eventId) was not found.',
   })
   @ApiResponse({
     status: 422,
