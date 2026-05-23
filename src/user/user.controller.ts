@@ -155,6 +155,7 @@ export class UserController {
     status: 422,
     description: 'Validation failed for one or more user fields.',
   })
+  @UsePipes(new BackendValidationPipe())
   async updateUser(
     @Body('user') updateUserDto: UpdateUserDto,
     @User() user: UserEntity,

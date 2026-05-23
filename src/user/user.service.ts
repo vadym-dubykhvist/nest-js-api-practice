@@ -106,9 +106,10 @@ export class UserService {
   }
 
   buildUserResponse(user: UserEntity, token?: string): UserResponseInterface {
+    const { password: _password, ...safeUser } = user;
     return {
       user: {
-        ...user,
+        ...safeUser,
         token: token ?? this.generateJwt(user),
       },
     };

@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+.git
+.github
+.zed
+.env*
+!.env.example
+*.log
+test
+README.md
+nodemon.json
