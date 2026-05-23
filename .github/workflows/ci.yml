@@ -37,14 +37,9 @@ jobs:
         run: pnpm test
 
   e2e:
-    name: E2E tests (shard ${{ matrix.shard }}/${{ strategy.job-total }})
+    name: E2E tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2, 3, 4]
 
     services:
       postgres:
@@ -68,8 +63,8 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: E2E tests (shard ${{ matrix.shard }}/${{ strategy.job-total }})
-        run: pnpm test:e2e --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+      - name: E2E tests
+        run: pnpm test:e2e
         env:
           DB_HOST: localhost
           DB_PORT: 5433

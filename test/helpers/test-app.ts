@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 
 import { AppModule } from '@app/app.module';
+import { ensureSchema } from './db';
 
 export interface TestApp {
   app: INestApplication;
@@ -10,6 +11,11 @@ export interface TestApp {
 }
 
 export async function createTestApp(): Promise<TestApp> {
+  const schema = process.env.DB_SCHEMA;
+  if (schema) {
+    await ensureSchema(schema);
+  }
+
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
