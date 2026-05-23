@@ -18,6 +18,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiResponse,
   ApiSecurity,
   ApiTags,
   getSchemaPath,
@@ -52,6 +53,7 @@ export class EventController {
   @ApiQuery({ name: 'author', required: false })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'offset', required: false, type: Number })
+  @ApiResponse({ status: 200, description: 'Events returned.' })
   async getEvents(
     @Query() query: EventsQueryInterface,
   ): Promise<EventsResponseInterface> {
@@ -61,6 +63,9 @@ export class EventController {
   @Get(':id')
   @ApiOperation({ summary: 'Get event' })
   @ApiParam({ name: 'id', description: 'Event ID.' })
+  @ApiResponse({ status: 200, description: 'Event returned.' })
+  @ApiResponse({ status: 400, description: 'Event ID is not an integer.' })
+  @ApiResponse({ status: 404, description: 'Event was not found.' })
   async getEvent(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<EventResponseInterface> {
@@ -78,6 +83,16 @@ export class EventController {
       required: ['event'],
       properties: { event: { $ref: getSchemaPath(CreateEventDto) } },
     },
+  })
+  @ApiResponse({ status: 201, description: 'Event created and returned.' })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({
+    status: 422,
+    description:
+      'Validation failed (missing/invalid fields, or endDate not after startDate).',
   })
   @UsePipes(new BackendValidationPipe())
   async createEvent(
@@ -100,6 +115,20 @@ export class EventController {
       properties: { event: { $ref: getSchemaPath(UpdateEventDto) } },
     },
   })
+  @ApiResponse({ status: 200, description: 'Event updated and returned.' })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Authenticated user is not the event author.',
+  })
+  @ApiResponse({ status: 404, description: 'Event was not found.' })
+  @ApiResponse({
+    status: 422,
+    description: 'Validation failed or endDate is not after startDate.',
+  })
   @UsePipes(new BackendValidationPipe())
   async updateEvent(
     @Param('id', ParseIntPipe) id: number,
@@ -115,6 +144,16 @@ export class EventController {
   @ApiSecurity('Token')
   @ApiOperation({ summary: 'Delete event' })
   @ApiParam({ name: 'id', description: 'Event ID.' })
+  @ApiResponse({ status: 200, description: 'Event deleted.' })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Authenticated user is not the event author.',
+  })
+  @ApiResponse({ status: 404, description: 'Event was not found.' })
   async deleteEvent(
     @Param('id', ParseIntPipe) id: number,
     @User('id') currentUserId: number,
@@ -136,6 +175,17 @@ export class EventController {
       properties: { registration: { $ref: getSchemaPath(RegisterEventDto) } },
     },
   })
+  @ApiResponse({ status: 201, description: 'Registration created.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Event is full or the user is already registered.',
+  })
+  @ApiResponse({ status: 404, description: 'Event was not found.' })
+  @ApiResponse({
+    status: 422,
+    description:
+      'Anonymous registration is missing email or name, or fields are invalid.',
+  })
   @UsePipes(new BackendValidationPipe())
   async register(
     @Param('id', ParseIntPipe) id: number,
@@ -150,6 +200,15 @@ export class EventController {
   @ApiSecurity('Token')
   @ApiOperation({ summary: 'Cancel registration (authenticated only)' })
   @ApiParam({ name: 'id', description: 'Event ID.' })
+  @ApiResponse({ status: 200, description: 'Registration cancelled.' })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Event or registration was not found.',
+  })
   async unregister(
     @Param('id', ParseIntPipe) id: number,
     @User('id') currentUserId: number,
@@ -168,6 +227,23 @@ export class EventController {
       required: ['rating'],
       properties: { rating: { $ref: getSchemaPath(RateEventDto) } },
     },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Rating created and event returned.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'User has already rated this event; use PATCH to change.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({ status: 404, description: 'Event was not found.' })
+  @ApiResponse({
+    status: 422,
+    description: 'Score is missing or out of the 1-5 range.',
   })
   @UsePipes(new BackendValidationPipe())
   async rate(
@@ -191,6 +267,19 @@ export class EventController {
       properties: { rating: { $ref: getSchemaPath(RateEventDto) } },
     },
   })
+  @ApiResponse({
+    status: 200,
+    description: 'Rating updated and event returned.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({ status: 404, description: 'Event or rating was not found.' })
+  @ApiResponse({
+    status: 422,
+    description: 'Score is missing or out of the 1-5 range.',
+  })
   @UsePipes(new BackendValidationPipe())
   async updateRating(
     @Param('id', ParseIntPipe) id: number,
@@ -206,6 +295,15 @@ export class EventController {
   @ApiSecurity('Token')
   @ApiOperation({ summary: 'Remove rating' })
   @ApiParam({ name: 'id', description: 'Event ID.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Rating removed and event returned.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Missing or invalid authorization token.',
+  })
+  @ApiResponse({ status: 404, description: 'Event or rating was not found.' })
   async removeRating(
     @Param('id', ParseIntPipe) id: number,
     @User('id') currentUserId: number,
