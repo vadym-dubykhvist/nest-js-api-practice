@@ -1,0 +1,64 @@
+image:
+  repository: nestjs-practice
+  tag: local
+  pullPolicy: Never
+
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+config:
+  PORT: "3000"
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_NAME: nestjspractice
+
+secretName: nestjs-secret
+
+ingress:
+  enabled: true
+  className: nginx
+  host: nestjs.localhost
+  path: /
+  pathType: Prefix
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
+
+migration:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: 16-alpine
+  storageSize: 5Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 512Mi

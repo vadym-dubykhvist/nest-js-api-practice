@@ -3,5 +3,14 @@
     "TypeScript": {
       "formatter": "prettier"
     }
+  },
+  "file_types": {
+    "Helm": [
+      "**/templates/*.yaml",
+      "**/templates/*.tpl",
+      "**/templates/**/*.yaml",
+      "**/Chart.yaml",
+      "**/values*.yaml"
+    ]
   }
 }
