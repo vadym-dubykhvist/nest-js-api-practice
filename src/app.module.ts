@@ -11,6 +11,7 @@ import { ArticleModule } from '@app/article/article.module';
 import { ProfileModule } from '@app/profile/profile.module';
 import { CommentModule } from '@app/comment/comment.module';
 import { EventModule } from '@app/event/event.module';
+import { HealthModule } from '@app/health/health.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EventModule } from '@app/event/event.module';
     ProfileModule,
     CommentModule,
     EventModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

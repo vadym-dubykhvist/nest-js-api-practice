@@ -14,7 +14,7 @@ const config: DataSourceOptions = {
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: process.env.DB_SYNCHRONIZE === 'true',
   dropSchema: process.env.DB_DROP_SCHEMA === 'true',
-  migrations: [__dirname + '/migrations/**/*{.ts, .js}'],
+  migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
 };
 
 export default config;
