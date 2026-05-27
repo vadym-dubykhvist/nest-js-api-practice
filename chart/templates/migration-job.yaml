@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "nestjs.fullname" . }}-migrate-{{ .Release.Revision }}
+  name: {{ include "nestjs.fullname" . }}-migrate-{{ .Values.image.tag | replace "." "-" | trunc 30 | trimSuffix "-" }}
   labels:
     {{- include "nestjs.labels" . | nindent 4 }}
     app.kubernetes.io/component: migration
