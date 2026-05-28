@@ -1,0 +1,48 @@
+{{- if .Values.prometheusRule.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "nestjs.fullname" . }}
+  labels:
+    {{- include "nestjs.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  groups:
+    - name: nestjs.rules
+      interval: 30s
+      rules:
+        - alert: NestjsHighErrorRate
+          expr: |
+            (
+              sum(rate(http_request_duration_seconds_count{app="nestjs-api-practice", status_code=~"5.."}[5m]))
+              /
+              clamp_min(sum(rate(http_request_duration_seconds_count{app="nestjs-api-practice"}[5m])), 0.0001)
+            ) > 0.05
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "NestJS error rate above 5%"
+            description: "5xx rate is {{`{{ $value | humanizePercentage }}`}} over the last 5 minutes."
+
+        - alert: NestjsHighLatency
+          expr: |
+            histogram_quantile(0.95,
+              sum by (le) (rate(http_request_duration_seconds_bucket{app="nestjs-api-practice"}[5m]))
+            ) > 0.5
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "NestJS p95 latency above 500ms"
+            description: "p95 is {{`{{ $value | humanizeDuration }}`}} over the last 5 minutes."
+
+        - alert: NestjsPodDown
+          expr: count(up{namespace="nestjs-app", app="nestjs-api-practice"} == 1) < 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "No healthy NestJS pods"
+            description: "Prometheus cannot scrape any nestjs pod for over 1 minute."
+{{- end }}

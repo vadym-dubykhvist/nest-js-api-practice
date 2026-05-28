@@ -45,6 +45,9 @@ serviceMonitor:
   interval: 15s
   scrapeTimeout: 10s
 
+prometheusRule:
+  enabled: false
+
 migration:
   enabled: true
   resources:
