@@ -38,7 +38,7 @@ spec:
             description: "p95 is {{`{{ $value | humanizeDuration }}`}} over the last 5 minutes."
 
         - alert: NestjsPodDown
-          expr: count(up{namespace="nestjs-app", app="nestjs-api-practice"} == 1) < 1
+          expr: absent(up{namespace="nestjs-app", app="nestjs-api-practice"} == 1)
           for: 1m
           labels:
             severity: critical
