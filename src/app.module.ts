@@ -12,6 +12,7 @@ import { ProfileModule } from '@app/profile/profile.module';
 import { CommentModule } from '@app/comment/comment.module';
 import { EventModule } from '@app/event/event.module';
 import { HealthModule } from '@app/health/health.module';
+import { MetricsModule } from '@app/metrics/metrics.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { HealthModule } from '@app/health/health.module';
     CommentModule,
     EventModule,
     HealthModule,
+    MetricsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

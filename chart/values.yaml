@@ -39,6 +39,12 @@ hpa:
   maxReplicas: 5
   targetCPUUtilizationPercentage: 50
 
+serviceMonitor:
+  enabled: false
+  path: /api/metrics
+  interval: 15s
+  scrapeTimeout: 10s
+
 migration:
   enabled: true
   resources:
