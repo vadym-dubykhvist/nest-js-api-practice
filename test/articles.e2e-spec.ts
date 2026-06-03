@@ -32,6 +32,25 @@ describe('Articles (e2e)', () => {
       .expect(201);
   };
 
+  const createEvent = async (token: string) => {
+    const response = await http
+      .post('/api/events')
+      .set(authHeader(token))
+      .send({
+        event: {
+          title: 'NestJS Meetup',
+          description: 'Hands-on workshop.',
+          location: 'Kyiv',
+          startDate: '2030-09-15T18:00:00.000Z',
+          endDate: '2030-09-15T21:00:00.000Z',
+          tags: ['nestjs'],
+          maxGuests: 100,
+        },
+      })
+      .expect(201);
+    return response.body.event as { id: number; title: string };
+  };
+
   describe('POST /api/articles', () => {
     it('creates an article for the authenticated user', async () => {
       const author = await registerUser(app);
@@ -234,6 +253,43 @@ describe('Articles (e2e)', () => {
       expect(response.body.articles).toHaveLength(1);
     });
 
+    it('filters by the event the articles belong to', async () => {
+      const author = await registerUser(app);
+      const event = await createEvent(author.token);
+
+      await createArticle(app, author.token, {
+        title: 'Belongs to event',
+        eventId: event.id,
+      });
+      await createArticle(app, author.token, { title: 'No event' });
+
+      const response = await http
+        .get('/api/articles')
+        .query({ event: event.id })
+        .expect(200);
+
+      expect(response.body.articlesCount).toBe(1);
+      expect(response.body.articles[0].title).toBe('Belongs to event');
+      expect(response.body.articles[0].event).toMatchObject({
+        id: event.id,
+        title: event.title,
+      });
+    });
+
+    it('includes the linked event on each article in the list', async () => {
+      const author = await registerUser(app);
+      const event = await createEvent(author.token);
+
+      await createArticle(app, author.token, { eventId: event.id });
+
+      const response = await http.get('/api/articles').expect(200);
+
+      expect(response.body.articles[0].event).toMatchObject({
+        id: event.id,
+        title: event.title,
+      });
+    });
+
     it('flags articles favorited by the authenticated user', async () => {
       const author = await registerUser(app, { username: 'author' });
       const fan = await registerUser(app, { username: 'fan' });
@@ -306,6 +362,34 @@ describe('Articles (e2e)', () => {
         slug: article.slug,
         title: article.title,
       });
+    });
+
+    it('includes the linked event when the article belongs to one', async () => {
+      const author = await registerUser(app);
+      const event = await createEvent(author.token);
+      const article = await createArticle(app, author.token, {
+        eventId: event.id,
+      });
+
+      const response = await http
+        .get(`/api/articles/${article.slug}`)
+        .expect(200);
+
+      expect(response.body.article.event).toMatchObject({
+        id: event.id,
+        title: event.title,
+      });
+    });
+
+    it('returns a null event when the article has no event', async () => {
+      const author = await registerUser(app);
+      const article = await createArticle(app, author.token);
+
+      const response = await http
+        .get(`/api/articles/${article.slug}`)
+        .expect(200);
+
+      expect(response.body.article.event).toBeNull();
     });
 
     it('returns 404 when the article does not exist', async () => {

@@ -42,11 +42,18 @@ export class ArticleService {
     const queryBuilder = this.dataSource
       .getRepository(ArticleEntity)
       .createQueryBuilder('articles')
-      .leftJoinAndSelect('articles.author', 'author');
+      .leftJoinAndSelect('articles.author', 'author')
+      .leftJoinAndSelect('articles.event', 'event');
 
     if (query.tag) {
       queryBuilder.andWhere('articles.tagList LIKE :tag', {
         tag: `%${query.tag}%`,
+      });
+    }
+
+    if (query.event) {
+      queryBuilder.andWhere('articles.eventId = :eventId', {
+        eventId: query.event,
       });
     }
 
@@ -191,7 +198,10 @@ export class ArticleService {
   }
 
   async getArticle(slug: string): Promise<ArticleEntity> {
-    const article = await this.articleRepository.findOne({ where: { slug } });
+    const article = await this.articleRepository.findOne({
+      where: { slug },
+      relations: ['event'],
+    });
 
     if (!article) {
       this.exceptionService.throwHttpException(

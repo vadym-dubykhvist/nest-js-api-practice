@@ -4,6 +4,7 @@ export interface ArticlesQueryInterface {
   limit?: number;
   offset?: number;
   favorited?: string;
+  event?: string;
 }
 
 export interface ArticlesFeedQueryInterface {

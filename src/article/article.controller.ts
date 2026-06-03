@@ -84,6 +84,13 @@ export class ArticleController {
     example: 0,
     type: Number,
   })
+  @ApiQuery({
+    name: 'event',
+    required: false,
+    description: 'Filter articles by the event they belong to (event id).',
+    example: 1,
+    type: Number,
+  })
   @ApiResponse({
     status: 200,
     description: 'Articles returned.',
