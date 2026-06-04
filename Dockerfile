@@ -19,8 +19,11 @@ RUN corepack enable
 # Workspace + project manifests first for a cacheable install layer.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/package.json
+COPY apps/web/package.json ./apps/web/package.json
 COPY libs/shared-types/package.json ./libs/shared-types/package.json
 COPY libs/api-client/package.json ./libs/api-client/package.json
+# --frozen-lockfile needs every workspace manifest present; --filter keeps the
+# install scoped to the API subtree (web/libs deps are not installed here).
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm config set store-dir /pnpm/store && \
     pnpm install --frozen-lockfile --prefer-offline --filter @events/api...

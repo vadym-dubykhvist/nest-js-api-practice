@@ -11,6 +11,9 @@ out/
 .nx/cache
 .nx/workspace-data
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+
 # Logs
 logs
 *.log

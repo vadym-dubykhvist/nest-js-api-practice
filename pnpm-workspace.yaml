@@ -7,4 +7,5 @@ allowBuilds:
   '@scarf/scarf': false
   bcrypt: true
   nx: true
+  sharp: true
   unrs-resolver: true
