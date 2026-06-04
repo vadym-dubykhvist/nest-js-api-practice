@@ -1,5 +1,4 @@
 import { DeleteResult } from 'typeorm';
-
 import {
   Body,
   Controller,
@@ -12,22 +11,6 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-
-import { ArticleService } from '@app/article/article.service';
-import { AuthGuard } from '@app/user/guards/auth.guard';
-import { User } from '@app/user/decorators/user.decorator';
-import { UserEntity } from '@app/user/user.entity';
-import {
-  ArticleResponseInterface,
-  ArticlesResponseInterface,
-} from '@app/article/types/articleResponse.interfaces';
-import type {
-  ArticlesFeedQueryInterface,
-  ArticlesQueryInterface,
-} from '@app/article/types/article.interfaces';
-import { UpdateArticleDto } from '@app/article/dto/updateArticle.dto';
-import { CreateArticleDto } from '@app/article/dto/createArticle.dto';
-import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
 import {
   ApiBody,
   ApiExtraModels,
@@ -39,6 +22,22 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
+
+import { ArticleService } from '@app/article/article.service';
+import { CreateArticleDto } from '@app/article/dto/createArticle.dto';
+import { UpdateArticleDto } from '@app/article/dto/updateArticle.dto';
+import type {
+  ArticlesFeedQueryInterface,
+  ArticlesQueryInterface,
+} from '@app/article/types/article.interfaces';
+import {
+  ArticleResponseInterface,
+  ArticlesResponseInterface,
+} from '@app/article/types/articleResponse.interfaces';
+import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
+import { User } from '@app/user/decorators/user.decorator';
+import { AuthGuard } from '@app/user/guards/auth.guard';
+import { UserEntity } from '@app/user/user.entity';
 
 @ApiTags('articles')
 @ApiExtraModels(CreateArticleDto, UpdateArticleDto)

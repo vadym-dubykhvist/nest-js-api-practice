@@ -8,8 +8,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserEntity } from '@app/user/user.entity';
+
 import { ArticleEntity } from '@app/article/article.entity';
+import { UserEntity } from '@app/user/user.entity';
 
 @Entity({ name: 'comments' })
 export class CommentEntity {

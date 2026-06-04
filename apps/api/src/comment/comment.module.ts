@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { CommentEntity } from '@app/comment/comment.entity';
 import { ArticleEntity } from '@app/article/article.entity';
-import { UserEntity } from '@app/user/user.entity';
+import { CommentController } from '@app/comment/comment.controller';
+import { CommentEntity } from '@app/comment/comment.entity';
+import { CommentService } from '@app/comment/comment.service';
 import { SharedModule } from '@app/shared/shared.module';
 import { AuthGuard } from '@app/user/guards/auth.guard';
-import { CommentController } from '@app/comment/comment.controller';
-import { CommentService } from '@app/comment/comment.service';
+import { UserEntity } from '@app/user/user.entity';
 
 @Module({
   imports: [

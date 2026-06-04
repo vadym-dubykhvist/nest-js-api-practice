@@ -1,8 +1,9 @@
+import { DataSource } from 'typeorm';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DataSource } from 'typeorm';
 
 import { AppModule } from '@app/app.module';
+
 import { ensureSchema } from './db';
 
 export interface TestApp {

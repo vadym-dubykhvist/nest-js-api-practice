@@ -8,15 +8,6 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { UserService } from '@app/user/user.service';
-import { CreateUserDto } from '@app/user/dto/createUser.dto';
-import { LoginUserDto } from '@app/user/dto/loginUser.dto';
-import type { UserResponseInterface } from '@app/user/types/userResponse.interfaces';
-import { User } from '@app/user/decorators/user.decorator';
-import { UserEntity } from '@app/user/user.entity';
-import { AuthGuard } from '@app/user/guards/auth.guard';
-import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
-import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
 import {
   ApiBody,
   ApiExtraModels,
@@ -26,6 +17,16 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
+
+import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
+import { User } from '@app/user/decorators/user.decorator';
+import { CreateUserDto } from '@app/user/dto/createUser.dto';
+import { LoginUserDto } from '@app/user/dto/loginUser.dto';
+import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
+import { AuthGuard } from '@app/user/guards/auth.guard';
+import type { UserResponseInterface } from '@app/user/types/userResponse.interfaces';
+import { UserEntity } from '@app/user/user.entity';
+import { UserService } from '@app/user/user.service';
 
 @ApiTags('users')
 @ApiExtraModels(CreateUserDto, LoginUserDto, UpdateUserDto)

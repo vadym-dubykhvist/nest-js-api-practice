@@ -1,9 +1,9 @@
-import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { DataSource } from 'typeorm';
+import { INestApplication } from '@nestjs/common';
 
-import { createTestApp } from './helpers/test-app';
 import { cleanDatabase } from './helpers/db';
+import { createTestApp } from './helpers/test-app';
 
 describe('Tags (e2e)', () => {
   let app: INestApplication;

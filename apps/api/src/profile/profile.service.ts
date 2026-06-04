@@ -1,11 +1,12 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import type { ProfileResponseInterface } from '@app/profile/types/profileResponse.interfaces';
-import { ProfileType } from '@app/profile/types/profile.types';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '@app/user/user.entity';
 import { Repository } from 'typeorm';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import { FollowEntity } from '@app/profile/follow.entity';
+import { ProfileType } from '@app/profile/types/profile.types';
+import type { ProfileResponseInterface } from '@app/profile/types/profileResponse.interfaces';
 import { ExceptionService } from '@app/shared/services/exception.service';
+import { UserEntity } from '@app/user/user.entity';
 
 @Injectable()
 export class ProfileService {

@@ -1,10 +1,10 @@
-import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { DataSource } from 'typeorm';
+import { INestApplication } from '@nestjs/common';
 
-import { createTestApp } from './helpers/test-app';
-import { cleanDatabase } from './helpers/db';
 import { authHeader, registerUser } from './helpers/auth';
+import { cleanDatabase } from './helpers/db';
+import { createTestApp } from './helpers/test-app';
 
 describe('Users (e2e)', () => {
   let app: INestApplication;

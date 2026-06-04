@@ -1,6 +1,7 @@
 // @ts-check
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -11,6 +12,27 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   eslintPluginPrettierRecommended,
+  {
+    plugins: { 'simple-import-sort': simpleImportSort },
+    rules: {
+      // Clear, explicit import order (auto-fixable with `eslint --fix`):
+      //   side-effects -> node builtins -> external packages
+      //   -> @app/* (internal absolute) -> relative
+      'simple-import-sort/imports': [
+        'error',
+        {
+          groups: [
+            ['^\\u0000'],
+            ['^node:'],
+            ['^\\w', '^@(?!app/)'],
+            ['^@app/'],
+            ['^\\.'],
+          ],
+        },
+      ],
+      'simple-import-sort/exports': 'error',
+    },
+  },
   {
     languageOptions: {
       globals: {

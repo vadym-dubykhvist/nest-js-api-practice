@@ -1,9 +1,9 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { ObjectLiteral, Repository } from 'typeorm';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 import { ExceptionService } from '@app/shared/services/exception.service';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';

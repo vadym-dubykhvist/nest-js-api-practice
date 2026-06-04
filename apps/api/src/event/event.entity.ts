@@ -5,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { UserEntity } from '@app/user/user.entity';
 
 @Entity({ name: 'events' })

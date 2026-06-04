@@ -1,5 +1,6 @@
-import { ExpressRequest } from '@app/types/expressRequest.interface';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+
+import { ExpressRequest } from '@app/types/expressRequest.interface';
 import { UserEntity } from '@app/user/user.entity';
 
 export const User = createParamDecorator(

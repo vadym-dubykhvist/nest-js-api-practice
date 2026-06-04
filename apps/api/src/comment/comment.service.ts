@@ -1,10 +1,9 @@
+import { Repository } from 'typeorm';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
-import { CommentEntity } from '@app/comment/comment.entity';
 import { ArticleEntity } from '@app/article/article.entity';
-import { UserEntity } from '@app/user/user.entity';
+import { CommentEntity } from '@app/comment/comment.entity';
 import { CreateCommentDto } from '@app/comment/dto/createComment.dto';
 import { UpdateCommentDto } from '@app/comment/dto/updateComment.dto';
 import {
@@ -13,6 +12,7 @@ import {
   CommentType,
 } from '@app/comment/types/commentResponse.interfaces';
 import { ExceptionService } from '@app/shared/services/exception.service';
+import { UserEntity } from '@app/user/user.entity';
 
 @Injectable()
 export class CommentService {

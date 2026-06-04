@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { ExceptionService } from '@app/shared/services/exception.service';
 
 @Module({

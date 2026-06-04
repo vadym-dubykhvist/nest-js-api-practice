@@ -1,3 +1,6 @@
+import { Request, Response } from 'express';
+import { Histogram } from 'prom-client';
+import { Observable, tap } from 'rxjs';
 import {
   CallHandler,
   ExecutionContext,
@@ -5,9 +8,6 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { InjectMetric } from '@willsoto/nestjs-prometheus';
-import { Histogram } from 'prom-client';
-import { Request, Response } from 'express';
-import { Observable, tap } from 'rxjs';
 
 @Injectable()
 export class HttpMetricsInterceptor implements NestInterceptor {

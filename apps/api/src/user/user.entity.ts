@@ -1,3 +1,4 @@
+import { hash } from 'bcrypt';
 import {
   BeforeInsert,
   Column,
@@ -7,7 +8,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { hash } from 'bcrypt';
+
 import { ArticleEntity } from '@app/article/article.entity';
 
 @Entity({ name: 'users' })

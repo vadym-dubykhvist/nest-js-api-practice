@@ -1,12 +1,12 @@
-import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { DataSource } from 'typeorm';
+import { INestApplication } from '@nestjs/common';
 
-import { createTestApp } from './helpers/test-app';
-import { cleanDatabase } from './helpers/db';
-import { authHeader, registerUser } from './helpers/auth';
 import { createArticle } from './helpers/articles';
+import { authHeader, registerUser } from './helpers/auth';
 import { createComment } from './helpers/comments';
+import { cleanDatabase } from './helpers/db';
+import { createTestApp } from './helpers/test-app';
 
 describe('Comments (e2e)', () => {
   let app: INestApplication;

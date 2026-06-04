@@ -1,5 +1,3 @@
-import { UserEntity } from '@app/user/user.entity';
-import { EventEntity } from '@app/event/event.entity';
 import {
   BeforeUpdate,
   Column,
@@ -7,6 +5,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { EventEntity } from '@app/event/event.entity';
+import { UserEntity } from '@app/user/user.entity';
 
 @Entity('articles')
 export class ArticleEntity {

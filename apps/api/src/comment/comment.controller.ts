@@ -22,9 +22,6 @@ import {
 } from '@nestjs/swagger';
 
 import { CommentService } from '@app/comment/comment.service';
-import { AuthGuard } from '@app/user/guards/auth.guard';
-import { User } from '@app/user/decorators/user.decorator';
-import { UserEntity } from '@app/user/user.entity';
 import { CreateCommentDto } from '@app/comment/dto/createComment.dto';
 import { UpdateCommentDto } from '@app/comment/dto/updateComment.dto';
 import {
@@ -32,6 +29,9 @@ import {
   CommentsResponseInterface,
 } from '@app/comment/types/commentResponse.interfaces';
 import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
+import { User } from '@app/user/decorators/user.decorator';
+import { AuthGuard } from '@app/user/guards/auth.guard';
+import { UserEntity } from '@app/user/user.entity';
 
 @ApiTags('comments')
 @ApiExtraModels(CreateCommentDto, UpdateCommentDto)

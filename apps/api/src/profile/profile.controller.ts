@@ -6,10 +6,6 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ProfileResponseInterface } from '@app/profile/types/profileResponse.interfaces';
-import { ProfileService } from '@app/profile/profile.service';
-import { User } from '@app/user/decorators/user.decorator';
-import { AuthGuard } from '@app/user/guards/auth.guard';
 import {
   ApiOperation,
   ApiParam,
@@ -17,6 +13,11 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
+
+import { ProfileService } from '@app/profile/profile.service';
+import { ProfileResponseInterface } from '@app/profile/types/profileResponse.interfaces';
+import { User } from '@app/user/decorators/user.decorator';
+import { AuthGuard } from '@app/user/guards/auth.guard';
 
 @ApiTags('profiles')
 @Controller('profiles')

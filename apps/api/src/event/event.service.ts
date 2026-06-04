@@ -1,15 +1,14 @@
+import { DataSource, DeleteResult, Repository } from 'typeorm';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, DeleteResult, Repository } from 'typeorm';
 
-import { EventEntity } from '@app/event/event.entity';
-import { RegistrationEntity } from '@app/event/registration.entity';
-import { EventRatingEntity } from '@app/event/eventRating.entity';
-import { UserEntity } from '@app/user/user.entity';
 import { CreateEventDto } from '@app/event/dto/createEvent.dto';
-import { UpdateEventDto } from '@app/event/dto/updateEvent.dto';
-import { RegisterEventDto } from '@app/event/dto/registerEvent.dto';
 import { RateEventDto } from '@app/event/dto/rateEvent.dto';
+import { RegisterEventDto } from '@app/event/dto/registerEvent.dto';
+import { UpdateEventDto } from '@app/event/dto/updateEvent.dto';
+import { EventEntity } from '@app/event/event.entity';
+import { EventRatingEntity } from '@app/event/eventRating.entity';
+import { RegistrationEntity } from '@app/event/registration.entity';
 import {
   EventResponseInterface,
   EventsQueryInterface,
@@ -17,6 +16,7 @@ import {
   RegistrationResponseInterface,
 } from '@app/event/types/event.interfaces';
 import { ExceptionService } from '@app/shared/services/exception.service';
+import { UserEntity } from '@app/user/user.entity';
 
 @Injectable()
 export class EventService {

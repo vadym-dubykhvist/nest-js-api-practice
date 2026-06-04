@@ -1,7 +1,7 @@
+import { ObjectLiteral, Repository } from 'typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ObjectLiteral, Repository } from 'typeorm';
 
 import { FollowEntity } from '@app/profile/follow.entity';
 import { ProfileService } from '@app/profile/profile.service';

@@ -1,5 +1,5 @@
-import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
+import { INestApplication } from '@nestjs/common';
 
 import { authHeader } from './auth';
 

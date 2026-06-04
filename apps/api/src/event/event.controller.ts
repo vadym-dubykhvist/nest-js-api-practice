@@ -24,14 +24,11 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 
-import { EventService } from '@app/event/event.service';
-import { AuthGuard } from '@app/user/guards/auth.guard';
-import { User } from '@app/user/decorators/user.decorator';
-import { UserEntity } from '@app/user/user.entity';
 import { CreateEventDto } from '@app/event/dto/createEvent.dto';
-import { UpdateEventDto } from '@app/event/dto/updateEvent.dto';
-import { RegisterEventDto } from '@app/event/dto/registerEvent.dto';
 import { RateEventDto } from '@app/event/dto/rateEvent.dto';
+import { RegisterEventDto } from '@app/event/dto/registerEvent.dto';
+import { UpdateEventDto } from '@app/event/dto/updateEvent.dto';
+import { EventService } from '@app/event/event.service';
 import type {
   EventResponseInterface,
   EventsQueryInterface,
@@ -39,6 +36,9 @@ import type {
   RegistrationResponseInterface,
 } from '@app/event/types/event.interfaces';
 import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
+import { User } from '@app/user/decorators/user.decorator';
+import { AuthGuard } from '@app/user/guards/auth.guard';
+import { UserEntity } from '@app/user/user.entity';
 
 @ApiTags('events')
 @ApiExtraModels(CreateEventDto, UpdateEventDto, RegisterEventDto, RateEventDto)

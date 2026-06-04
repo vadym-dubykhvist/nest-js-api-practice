@@ -6,6 +6,7 @@
  * For authenticated calls, pass `{ token }` through to the api-client.
  */
 import { useQuery } from '@tanstack/react-query';
+
 import { api } from '@events/api-client';
 import type { EventsQuery } from '@events/shared-types';
 

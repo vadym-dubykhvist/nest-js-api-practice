@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity } from '@app/user/user.entity';
+
 import { EventEntity } from '@app/event/event.entity';
+import { UserEntity } from '@app/user/user.entity';
 
 @Entity({ name: 'registrations' })
 export class RegistrationEntity {

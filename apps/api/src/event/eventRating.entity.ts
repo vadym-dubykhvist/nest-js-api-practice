@@ -5,8 +5,9 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { UserEntity } from '@app/user/user.entity';
+
 import { EventEntity } from '@app/event/event.entity';
+import { UserEntity } from '@app/user/user.entity';
 
 @Entity({ name: 'event_ratings' })
 @Unique('UQ_event_ratings_user_event', ['user', 'event'])
