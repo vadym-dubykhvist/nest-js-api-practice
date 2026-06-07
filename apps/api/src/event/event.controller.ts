@@ -51,6 +51,7 @@ export class EventController {
   @ApiQuery({ name: 'tag', required: false })
   @ApiQuery({ name: 'location', required: false })
   @ApiQuery({ name: 'author', required: false })
+  @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'offset', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Events returned.' })
