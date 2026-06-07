@@ -1,102 +1,29 @@
 {
   "name": "nest-js-api-practice",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Events platform monorepo (NestJS API + Next.js web)",
   "private": true,
   "license": "UNLICENSED",
   "packageManager": "pnpm@11.0.3",
   "scripts": {
-    "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nodemon",
-    "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
-    "typecheck": "tsc --noEmit",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "build": "nx run-many -t build",
+    "typecheck": "nx run-many -t typecheck",
+    "lint": "nx run-many -t lint",
+    "lint:check": "nx run-many -t lint:check",
+    "test": "nx run-many -t test",
+    "test:e2e": "nx run @events/api:test:e2e",
     "test:e2e:up": "docker compose up -d postgres_test",
     "test:e2e:down": "docker compose stop postgres_test",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/ormdatasource.ts",
-    "db:drop": "pnpm typeorm schema:drop",
-    "db:create": "pnpm typeorm migration:generate",
-    "db:migrate": "pnpm typeorm migration:run",
-    "db:seed": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/ormseeddatasource.ts migration:run"
-  },
-  "dependencies": {
-    "@nestjs/common": "^11.0.1",
-    "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/platform-express": "^11.0.1",
-    "@nestjs/swagger": "^11.4.3",
-    "@nestjs/terminus": "^11.1.1",
-    "@nestjs/typeorm": "^11.0.1",
-    "@willsoto/nestjs-prometheus": "^6.1.0",
-    "bcrypt": "^6.0.0",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.15.1",
-    "jsonwebtoken": "^9.0.3",
-    "module-alias": "^2.3.4",
-    "nodemon": "^3.1.14",
-    "pg": "^8.20.0",
-    "prom-client": "^15.1.3",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1",
-    "slugify": "^1.6.9",
-    "typeorm": "^0.3.28"
+    "format": "prettier --write \"apps/**/*.{ts,tsx}\" \"libs/**/*.{ts,tsx}\"",
+    "api": "nx run @events/api:start",
+    "web": "nx run @events/web:dev",
+    "db:migrate": "nx run @events/api:db:migrate",
+    "db:seed": "nx run @events/api:db:seed",
+    "db:drop": "nx run @events/api:db:drop"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.18.0",
-    "@nestjs/cli": "^11.0.0",
-    "@nestjs/schematics": "^11.0.0",
-    "@nestjs/testing": "^11.0.1",
-    "@types/bcrypt": "^6.0.0",
-    "@types/express": "^5.0.0",
-    "@types/jest": "^30.0.0",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.0.0",
-    "@types/supertest": "^7.0.0",
-    "eslint": "^9.18.0",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-prettier": "^5.2.2",
-    "globals": "^17.0.0",
-    "jest": "^30.0.0",
+    "nx": "^22.7.5",
     "prettier": "^3.4.2",
-    "source-map-support": "^0.5.21",
-    "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
-    "ts-loader": "^9.5.2",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "moduleNameMapper": {
-      "^@app/(.*)$": "<rootDir>/$1"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
-  },
-  "_moduleAliases": {
-    "@app": "./dist"
+    "typescript": "^5.9.3"
   }
 }

@@ -1,4 +1,18 @@
 {
+  "lsp": {
+    "vtsls": {
+      "settings": {
+        "typescript": {
+          "tsdk": "node_modules/typescript/lib"
+        }
+      }
+    },
+    "eslint": {
+      "settings": {
+        "workingDirectories": [{ "mode": "auto" }]
+      }
+    }
+  },
   "languages": {
     "TypeScript": {
       "formatter": "prettier"

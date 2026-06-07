@@ -71,3 +71,31 @@ postgres:
     limits:
       cpu: 1000m
       memory: 512Mi
+
+web:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: ghcr.io/vadym-dubykhvist/nest-js-api-practice-web
+    tag: latest
+    pullPolicy: IfNotPresent
+  # API base URL the Next.js server proxies/SSR-fetches. Leave empty to default
+  # to the in-cluster API Service (http://<release-fullname>:<service.port>).
+  apiUrl: ""
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 3000
+  ingress:
+    enabled: true
+    className: nginx
+    host: app.localhost
+    path: /
+    pathType: Prefix
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
