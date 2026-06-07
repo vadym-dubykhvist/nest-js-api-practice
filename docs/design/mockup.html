@@ -1,0 +1,1785 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Events — Dark / Loud Mockup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============ TOKENS — dark-first / loud ============ */
+      :root {
+        --bg: #0a090e;
+        --bg2: #100e16;
+        --card: #16141d;
+        --card2: #1c1a26;
+        --text: #f4f2fb;
+        --muted: #928da6;
+        --line: #272433;
+        --line2: #332f42;
+        --acid: #cdff3a;
+        --acid-ink: #0a090e;
+        --pink: #ff3d8b;
+        --gold: #ffc53a;
+        --success: #34d17c;
+        --sh-md: 0 18px 40px -16px rgba(0, 0, 0, 0.7);
+        --sh-lg: 0 40px 90px -30px rgba(0, 0, 0, 0.85);
+        --glow:
+          0 0 0 1px rgba(205, 255, 58, 0.25),
+          0 10px 40px -8px rgba(205, 255, 58, 0.35);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', system-ui, sans-serif;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        background-image: url('assets/grain.svg');
+      }
+      .anton {
+        font-family: 'Anton', sans-serif;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.01em;
+        line-height: 0.92;
+      }
+      .mono {
+        font-family: 'Space Mono', ui-monospace, monospace;
+        font-variant-numeric: tabular-nums;
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 28px;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .eyebrow {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.68rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex: none;
+      }
+      section {
+        padding: 54px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      /* nav */
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        background: color-mix(in srgb, var(--bg) 78%, transparent);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--line);
+      }
+      .nav .wrap {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        height: 66px;
+      }
+      .brand {
+        font-family: 'Anton';
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .brand img {
+        width: 22px;
+        height: 26px;
+        filter: drop-shadow(0 0 10px rgba(205, 255, 58, 0.55));
+      }
+      .searchf {
+        flex: 1;
+        max-width: 330px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: var(--card);
+        border: 1px solid var(--line2);
+        border-radius: 12px;
+        padding: 9px 13px;
+        color: var(--muted);
+      }
+      .searchf input {
+        border: 0;
+        background: transparent;
+        outline: none;
+        color: var(--text);
+        width: 100%;
+        font: inherit;
+        font-size: 0.9rem;
+      }
+      .sp {
+        flex: 1;
+      }
+
+      /* subnav */
+      .subnav {
+        position: sticky;
+        top: 66px;
+        z-index: 30;
+        background: color-mix(in srgb, var(--bg) 82%, transparent);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line);
+      }
+      .subnav .wrap {
+        display: flex;
+        gap: 6px;
+        height: 46px;
+        align-items: center;
+        overflow-x: auto;
+      }
+      .subnav a {
+        font-family: 'Space Mono';
+        font-size: 0.71rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 6px 11px;
+        border-radius: 8px;
+        white-space: nowrap;
+      }
+      .subnav a:hover {
+        color: var(--text);
+        background: var(--card);
+      }
+
+      /* buttons */
+      .btn {
+        font: inherit;
+        font-weight: 600;
+        font-size: 0.88rem;
+        border-radius: 12px;
+        padding: 10px 18px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.14s cubic-bezier(0.2, 0, 0, 1);
+      }
+      .btn:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(205, 255, 58, 0.45);
+      }
+      .btn-acid {
+        background: var(--acid);
+        color: var(--acid-ink);
+        font-weight: 700;
+      }
+      .btn-acid:hover {
+        box-shadow: var(--glow);
+      }
+      .btn-outline {
+        border-color: var(--line2);
+        background: transparent;
+        color: var(--text);
+      }
+      .btn-outline:hover {
+        border-color: var(--text);
+      }
+      .btn-ghost {
+        background: transparent;
+      }
+      .btn-ghost:hover {
+        background: var(--card2);
+      }
+      .btn-block {
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+      }
+      .btn-lg {
+        padding: 14px 22px;
+        font-size: 0.98rem;
+      }
+      .icon-btn {
+        padding: 10px;
+        border-radius: 11px;
+      }
+
+      /* chips/badges */
+      .tagk {
+        font-family: 'Space Mono';
+        font-size: 0.7rem;
+        letter-spacing: 0.04em;
+        padding: 4px 10px;
+        border: 1px solid var(--line2);
+        border-radius: 8px;
+        color: var(--muted);
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Space Mono';
+        font-size: 0.64rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 5px 10px;
+        border-radius: 7px;
+      }
+      .b-up {
+        background: var(--acid);
+        color: var(--acid-ink);
+      }
+      .b-full {
+        background: transparent;
+        border: 1px solid var(--line2);
+        color: var(--muted);
+      }
+      .b-past {
+        background: var(--card2);
+        color: var(--muted);
+      }
+      .b-live {
+        background: var(--pink);
+        color: #fff;
+      }
+      .b-live .pulse {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #fff;
+        animation: p 1.2s infinite;
+      }
+      @keyframes p {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+      }
+      .stars {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--gold);
+        font-size: 0.82rem;
+      }
+      .stars svg {
+        width: 14px;
+        height: 14px;
+        fill: currentColor;
+        stroke: none;
+      }
+      .stars .n {
+        font-family: 'Space Mono';
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+
+      /* capacity */
+      .cap {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .cap .row {
+        display: flex;
+        justify-content: space-between;
+        font-family: 'Space Mono';
+        font-size: 0.74rem;
+        color: var(--muted);
+      }
+      .bar {
+        height: 5px;
+        border-radius: 999px;
+        background: var(--card2);
+        overflow: hidden;
+      }
+      .bar > i {
+        display: block;
+        height: 100%;
+        background: var(--acid);
+      }
+      .bar.warn > i {
+        background: var(--gold);
+      }
+      .bar.full > i {
+        background: var(--pink);
+      }
+
+      /* avatars */
+      .stack {
+        display: flex;
+        align-items: center;
+      }
+      .stack .av {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid var(--card);
+        margin-left: -10px;
+        display: grid;
+        place-items: center;
+        font-size: 0.68rem;
+        font-weight: 700;
+      }
+      .stack .av:first-child {
+        margin-left: 0;
+      }
+
+      /* big head */
+      .bighead {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+      }
+      .bighead h2 {
+        font-size: clamp(2.6rem, 7vw, 5.2rem);
+        margin: 6px 0 0;
+      }
+      .bighead h2 em {
+        font-style: normal;
+        color: var(--acid);
+      }
+      .filter {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 26px;
+      }
+      .pick {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--card);
+        border: 1px solid var(--line2);
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .pick:hover {
+        border-color: var(--text);
+      }
+
+      /* poster grid */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+        gap: 20px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        overflow: hidden;
+        transition: 0.16s cubic-bezier(0.2, 0, 0, 1);
+        cursor: pointer;
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        border-color: var(--line2);
+        box-shadow: var(--sh-md);
+      }
+      .poster {
+        aspect-ratio: 4/5;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+      }
+      .poster .pdate {
+        font-family: 'Space Mono';
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        align-self: flex-start;
+        background: rgba(0, 0, 0, 0.32);
+        backdrop-filter: blur(4px);
+        padding: 5px 10px;
+        border-radius: 8px;
+      }
+      .poster .ptitle {
+        font-family: 'Anton';
+        text-transform: uppercase;
+        font-size: 2.3rem;
+        line-height: 0.9;
+      }
+      .card .body {
+        padding: 16px 18px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .card .l1 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .card h3 {
+        font-weight: 600;
+        font-size: 1.05rem;
+      }
+      .metarow {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .metarow span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .metarow svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      /* detail */
+      .detail {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 38px;
+        align-items: start;
+      }
+      .hero {
+        aspect-ratio: 16/10;
+        border-radius: 22px;
+        padding: 34px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--sh-md);
+      }
+      .hero .ht {
+        font-family: 'Anton';
+        text-transform: uppercase;
+        font-size: clamp(2.6rem, 6vw, 4.6rem);
+        line-height: 0.9;
+        max-width: 12ch;
+      }
+      .drow {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 24px 0 6px;
+        flex-wrap: wrap;
+      }
+      .host {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .host .av {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--pink), var(--gold));
+      }
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 16px 0;
+      }
+      .prose {
+        font-size: 1.02rem;
+        line-height: 1.7;
+        color: var(--text);
+        opacity: 0.86;
+        max-width: 60ch;
+      }
+      .sec-h {
+        font-family: 'Anton';
+        text-transform: uppercase;
+        font-size: 1.7rem;
+        margin: 38px 0 16px;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .sec-h .c {
+        font-family: 'Space Mono';
+        font-size: 0.85rem;
+        color: var(--acid);
+      }
+      .art {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 18px;
+        transition: 0.13s;
+        display: block;
+      }
+      .art:hover {
+        border-color: var(--line2);
+        transform: translateX(3px);
+      }
+
+      /* ticket */
+      .ticket {
+        position: sticky;
+        top: 124px;
+        background: var(--card);
+        border: 1px solid var(--line2);
+        border-radius: 20px;
+        box-shadow: var(--sh-md);
+        overflow: hidden;
+      }
+      .ticket .top {
+        padding: 22px 22px 18px;
+      }
+      .ticket .when {
+        font-family: 'Anton';
+        text-transform: uppercase;
+        font-size: 2rem;
+        line-height: 0.95;
+      }
+      .ticket .when small {
+        display: block;
+        font-family: 'Space Mono';
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-top: 6px;
+        text-transform: none;
+      }
+      .ticket .where {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 14px 0 18px;
+      }
+      .perf {
+        position: relative;
+        height: 0;
+        border-top: 2px dashed var(--line2);
+        margin: 0 18px;
+      }
+      .perf::before,
+      .perf::after {
+        content: '';
+        position: absolute;
+        top: -12px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--bg);
+      }
+      .perf::before {
+        left: -29px;
+      }
+      .perf::after {
+        right: -29px;
+      }
+      .ticket .bot {
+        padding: 20px 22px 22px;
+      }
+      .note {
+        font-family: 'Space Mono';
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 10px;
+      }
+
+      /* fields (shared) */
+      .f {
+        margin: 0;
+      }
+      .f > label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin-bottom: 7px;
+      }
+      .input {
+        width: 100%;
+        font: inherit;
+        font-size: 0.92rem;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--line2);
+        background: var(--bg2);
+        color: var(--text);
+        outline: none;
+      }
+      .input:focus {
+        border-color: var(--acid);
+        box-shadow: 0 0 0 3px rgba(205, 255, 58, 0.18);
+      }
+      .input::placeholder {
+        color: var(--muted);
+      }
+      .inrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid var(--line2);
+        background: var(--bg2);
+        border-radius: 12px;
+        padding: 0 13px;
+      }
+      .inrow:focus-within {
+        border-color: var(--acid);
+        box-shadow: 0 0 0 3px rgba(205, 255, 58, 0.18);
+      }
+      .inrow svg {
+        color: var(--muted);
+      }
+      .inrow .eye {
+        cursor: pointer;
+      }
+      .inrow input {
+        flex: 1;
+        border: 0;
+        background: transparent;
+        outline: none;
+        color: var(--text);
+        font: inherit;
+        font-size: 0.92rem;
+        padding: 12px 0;
+      }
+
+      /* auth split */
+      .split {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        border: 1px solid var(--line2);
+        border-radius: 24px;
+        overflow: hidden;
+        min-height: 540px;
+        margin-top: 16px;
+      }
+      .authposter {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 30px;
+        background: linear-gradient(150deg, #ff3d8b, #7b5cff 92%);
+        color: #fff;
+      }
+      .authposter .big {
+        font-family: 'Anton';
+        text-transform: uppercase;
+        font-size: clamp(2.4rem, 4.5vw, 4rem);
+        line-height: 0.9;
+      }
+      .authwrap {
+        background: var(--card);
+        padding: clamp(28px, 4vw, 54px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 16px;
+      }
+      .authwrap h2 {
+        font-family: 'Anton';
+        text-transform: uppercase;
+        font-size: 2.2rem;
+        line-height: 0.95;
+      }
+      .linkrow {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .linkrow a {
+        color: var(--acid);
+      }
+
+      /* create form */
+      .formgrid {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 34px;
+        align-items: start;
+      }
+      .fieldset {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .cover-drop {
+        aspect-ratio: 16/9;
+        border: 1.5px dashed var(--line2);
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: var(--muted);
+        cursor: pointer;
+        background: var(--bg2);
+        text-align: center;
+      }
+      .cover-drop:hover {
+        border-color: var(--acid);
+        color: var(--text);
+      }
+      .chips-in {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid var(--line2);
+        background: var(--bg2);
+        border-radius: 12px;
+        padding: 9px 11px;
+      }
+      .chips-in input {
+        flex: 1;
+        min-width: 90px;
+        border: 0;
+        background: transparent;
+        outline: none;
+        color: var(--text);
+        font: inherit;
+        font-size: 0.9rem;
+      }
+      .chip-rm {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--card2);
+        border-radius: 8px;
+        padding: 4px 9px;
+        font-family: 'Space Mono';
+        font-size: 0.74rem;
+        cursor: pointer;
+      }
+      .stepper {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--line2);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--bg2);
+      }
+      .stepper button {
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+        font-size: 1.2rem;
+        width: 44px;
+        height: 46px;
+        cursor: pointer;
+      }
+      .stepper button:hover {
+        background: var(--card2);
+      }
+      .stepper input {
+        width: 66px;
+        text-align: center;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        font-family: 'Space Mono';
+        font-size: 0.95rem;
+        outline: none;
+      }
+      .preview {
+        position: sticky;
+        top: 124px;
+      }
+
+      /* profile */
+      .profbanner {
+        height: 150px;
+        border-radius: 22px;
+        background: linear-gradient(150deg, #7b5cff, #3dcbff);
+      }
+      .profhead {
+        display: flex;
+        align-items: flex-end;
+        gap: 22px;
+        margin-top: -56px;
+        padding: 0 6px;
+      }
+      .profav {
+        width: 128px;
+        height: 128px;
+        border-radius: 30px;
+        border: 4px solid var(--bg);
+        background: linear-gradient(135deg, #ff3d8b, #ffc53a);
+        flex: none;
+        box-shadow: var(--sh-md);
+      }
+      .profname {
+        flex: 1;
+        padding-bottom: 0;
+        transform: translateY(8px);
+      }
+      .profname h2 {
+        font-family: 'Anton';
+        text-transform: uppercase;
+        margin-bottom: 0;
+        font-size: clamp(1.9rem, 4vw, 2.6rem);
+        line-height: 0.95;
+      }
+      .profname .handle {
+        color: var(--muted);
+        font-family: 'Space Mono';
+        font-size: 0.82rem;
+        margin-top: 7px;
+      }
+      .profactions {
+        display: flex;
+        gap: 10px;
+        padding-bottom: 8px;
+        flex: none;
+      }
+      .statline {
+        display: flex;
+        gap: 24px;
+        margin: 20px 6px 0;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .statline b {
+        font-family: 'Space Mono';
+        color: var(--text);
+      }
+      .profbio {
+        margin: 14px 6px 0;
+        max-width: 62ch;
+      }
+      .tabs {
+        display: flex;
+        gap: 4px;
+        border-bottom: 1px solid var(--line);
+        margin: 28px 8px 22px;
+      }
+      .tabs button {
+        border: 0;
+        background: transparent;
+        font: inherit;
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: var(--muted);
+        padding: 12px 14px;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+      }
+      .tabs button.on {
+        color: var(--text);
+        border-color: var(--acid);
+      }
+
+      /* modal */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 4, 8, 0.7);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        padding: 20px;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .modal {
+        width: 100%;
+        max-width: 440px;
+        background: var(--card);
+        border: 1px solid var(--line2);
+        border-radius: 22px;
+        box-shadow: var(--sh-lg);
+        padding: 26px;
+      }
+      .modal h3 {
+        font-family: 'Anton';
+        text-transform: uppercase;
+        font-size: 1.7rem;
+        line-height: 0.95;
+        margin: 4px 0;
+      }
+      .seg {
+        display: flex;
+        background: var(--bg2);
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 4px;
+        margin: 18px 0;
+        gap: 4px;
+      }
+      .seg button {
+        flex: 1;
+        border: 0;
+        background: transparent;
+        font: inherit;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 10px;
+        border-radius: 9px;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .seg button.on {
+        background: var(--acid);
+        color: var(--acid-ink);
+      }
+      .row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .stack-form {
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+      }
+      @media (max-width: 860px) {
+        .detail,
+        .formgrid {
+          grid-template-columns: 1fr;
+        }
+        .ticket,
+        .preview {
+          position: static;
+        }
+        .split {
+          grid-template-columns: 1fr;
+        }
+        .authposter {
+          min-height: 200px;
+        }
+        .profhead {
+          flex-wrap: wrap;
+        }
+        .profactions {
+          width: 100%;
+          justify-content: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <svg style="display: none">
+      <defs>
+        <symbol viewBox="0 0 24 24" id="i-cal">
+          <rect x="3" y="4" width="18" height="18" rx="2" />
+          <path d="M3 10h18M8 2v4M16 2v4" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-clock">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-pin">
+          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+          <circle cx="12" cy="10" r="3" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-search">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m21 21-4.3-4.3" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-star">
+          <path
+            d="m12 2 3 6.6 7.2.9-5.3 4.9 1.4 7.1L12 18.7 5.7 21.4l1.4-7.1L1.8 9.4 9 8.6z"
+          />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-arrow">
+          <path d="M7 17 17 7M8 7h9v9" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-users">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-heart">
+          <path
+            d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"
+          />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-msg">
+          <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-mail">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="m22 7-10 5L2 7" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-lock">
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-eye">
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+          <circle cx="12" cy="12" r="3" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-image">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <circle cx="9" cy="9" r="2" />
+          <path d="m21 15-4.5-4.5L5 22" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-hash">
+          <path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-x">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-userplus">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M19 8v6M22 11h-6" />
+        </symbol>
+        <symbol viewBox="0 0 24 24" id="i-edit">
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- NAV -->
+    <header class="nav">
+      <div class="wrap">
+        <div class="brand"><img src="assets/logo.svg" alt="" />Eventino</div>
+        <label class="searchf"
+          ><svg><use href="#i-search" /></svg
+          ><input placeholder="Search the night…"
+        /></label>
+        <div class="sp"></div>
+        <button class="btn btn-outline">Log in</button>
+        <button class="btn btn-acid">
+          Create event <svg><use href="#i-arrow" /></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- SUBNAV (page jumper for reference) -->
+    <nav class="subnav">
+      <div class="wrap">
+        <a href="#events">Events</a><a href="#detail">Detail</a
+        ><a href="#login">Login</a><a href="#create">Create</a
+        ><a href="#profile">Profile</a><a href="#components">Components</a>
+      </div>
+    </nav>
+
+    <!-- EVENTS LIST -->
+    <section id="events">
+      <div class="wrap">
+        <div class="bighead">
+          <div>
+            <div class="eyebrow">Kyiv · this week</div>
+            <h2 class="anton">What's<br />on <em>now.</em></h2>
+          </div>
+          <span class="muted mono" style="font-size: 0.82rem"
+            >128 events live →</span
+          >
+        </div>
+        <div class="filter">
+          <label class="searchf" style="max-width: 230px"
+            ><svg><use href="#i-search" /></svg><input placeholder="Search…"
+          /></label>
+          <span class="pick">Any tag</span
+          ><span class="pick"
+            ><svg style="width: 15px; height: 15px"><use href="#i-pin" /></svg>
+            Kyiv</span
+          ><span class="pick">This week</span>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div
+              class="poster"
+              style="
+                background: linear-gradient(150deg, #ff3d8b, #ff8a3d);
+                color: #fff;
+              "
+            >
+              <span class="pdate">AUG 15</span>
+              <div class="ptitle">NestJS<br />Meetup 12</div>
+            </div>
+            <div class="body">
+              <div class="l1">
+                <span class="badge b-up">Upcoming</span
+                ><span class="stars"
+                  ><svg><use href="#i-star" /></svg
+                  ><span class="n">4.8</span></span
+                >
+              </div>
+              <div class="metarow">
+                <span
+                  ><svg><use href="#i-cal" /></svg
+                  ><span class="mono" style="font-size: 0.78rem"
+                    >18:00</span
+                  ></span
+                ><span
+                  ><svg><use href="#i-pin" /></svg>Creative Hub</span
+                >
+              </div>
+              <div class="cap">
+                <div class="row"><span>going</span><span>42 / 100</span></div>
+                <div class="bar"><i style="width: 42%"></i></div>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div
+              class="poster"
+              style="
+                background: linear-gradient(150deg, #7b5cff, #3dcbff);
+                color: #fff;
+              "
+            >
+              <span class="pdate">AUG 20</span>
+              <div class="ptitle">Design<br />Systems</div>
+            </div>
+            <div class="body">
+              <div class="l1">
+                <span class="badge b-up">Upcoming</span
+                ><span class="stars"
+                  ><svg><use href="#i-star" /></svg
+                  ><span class="n">5.0</span></span
+                >
+              </div>
+              <div class="metarow">
+                <span
+                  ><svg><use href="#i-cal" /></svg
+                  ><span class="mono" style="font-size: 0.78rem"
+                    >11:00</span
+                  ></span
+                ><span
+                  ><svg><use href="#i-pin" /></svg>Online</span
+                >
+              </div>
+              <div class="cap">
+                <div class="row"><span>going</span><span>47 / 50</span></div>
+                <div class="bar warn"><i style="width: 94%"></i></div>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div
+              class="poster"
+              style="
+                background: linear-gradient(150deg, #cdff3a, #19c39c);
+                color: #0a090e;
+              "
+            >
+              <span class="pdate" style="background: rgba(0, 0, 0, 0.18)"
+                >AUG 22</span
+              >
+              <div class="ptitle">K8s for<br />Devs</div>
+            </div>
+            <div class="body">
+              <div class="l1">
+                <span class="badge b-full">Sold out</span
+                ><span class="stars"
+                  ><svg><use href="#i-star" /></svg
+                  ><span class="n">4.6</span></span
+                >
+              </div>
+              <div class="metarow">
+                <span
+                  ><svg><use href="#i-cal" /></svg
+                  ><span class="mono" style="font-size: 0.78rem"
+                    >19:00</span
+                  ></span
+                ><span
+                  ><svg><use href="#i-pin" /></svg>Lviv</span
+                >
+              </div>
+              <div class="cap">
+                <div class="row"><span>going</span><span>30 / 30</span></div>
+                <div class="bar full"><i style="width: 100%"></i></div>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div
+              class="poster"
+              style="
+                background: linear-gradient(150deg, #1c1a26, #3a2150);
+                color: #cdff3a;
+              "
+            >
+              <span class="pdate" style="color: #fff">TODAY</span>
+              <div class="ptitle">TS Conf<br />Day 1</div>
+            </div>
+            <div class="body">
+              <div class="l1">
+                <span class="badge b-live"><span class="pulse"></span>Live</span
+                ><span class="stars"
+                  ><svg><use href="#i-star" /></svg
+                  ><span class="n">4.9</span></span
+                >
+              </div>
+              <div class="metarow">
+                <span
+                  ><svg><use href="#i-cal" /></svg
+                  ><span class="mono" style="font-size: 0.78rem"
+                    >10:00</span
+                  ></span
+                ><span
+                  ><svg><use href="#i-pin" /></svg>Online</span
+                >
+              </div>
+              <div class="cap">
+                <div class="row"><span>going</span><span>312 / 500</span></div>
+                <div class="bar"><i style="width: 62%"></i></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENT DETAIL -->
+    <section id="detail">
+      <div class="wrap">
+        <div class="eyebrow">Event · /events/12</div>
+        <div class="detail" style="margin-top: 16px">
+          <div>
+            <div
+              class="hero"
+              style="
+                background: linear-gradient(155deg, #ff3d8b, #7b1f4a 70%);
+                color: #fff;
+              "
+            >
+              <div class="eyebrow" style="color: rgba(255, 255, 255, 0.75)">
+                Fri Aug 15 · Creative Hub
+              </div>
+              <div class="ht anton">NestJS Meetup 12</div>
+            </div>
+            <div class="drow">
+              <span class="badge b-up">Upcoming</span>
+              <span class="stars"
+                ><svg><use href="#i-star" /></svg
+                ><svg><use href="#i-star" /></svg
+                ><svg><use href="#i-star" /></svg
+                ><svg><use href="#i-star" /></svg
+                ><span class="n">4.8 · 56 ratings</span></span
+              >
+            </div>
+            <div class="host">
+              <span class="av"></span>
+              <div>
+                <div style="font-weight: 600">Hosted by Vadym</div>
+                <div class="muted mono" style="font-size: 0.76rem">@vadym</div>
+              </div>
+            </div>
+            <div class="tags">
+              <span class="tagk">nestjs</span><span class="tagk">backend</span
+              ><span class="tagk">meetup</span>
+            </div>
+            <p class="prose">
+              Практичний вечір про NestJS у проді: модулі, тестування, деплой у
+              Kubernetes. Networking, піца й demo-сесії від спільноти. Приходь —
+              і зареєстрованим, і як гість.
+            </p>
+            <div class="sec-h anton">Articles <span class="c">/ 03</span></div>
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                max-width: 580px;
+              "
+            >
+              <a class="art"
+                ><div
+                  class="eyebrow"
+                  style="margin-bottom: 6px; color: var(--acid)"
+                >
+                  ↳ part of this event
+                </div>
+                <div style="font-weight: 600; font-size: 1.04rem">
+                  Як ми деплоїли API в k8s
+                </div>
+                <div
+                  class="metarow"
+                  style="margin-top: 8px; font-size: 0.78rem"
+                >
+                  <span>@vadym</span
+                  ><span
+                    ><svg><use href="#i-heart" /></svg> 12</span
+                  ><span
+                    ><svg><use href="#i-msg" /></svg> 4</span
+                  >
+                </div></a
+              >
+              <a class="art"
+                ><div
+                  class="eyebrow"
+                  style="margin-bottom: 6px; color: var(--acid)"
+                >
+                  ↳ part of this event
+                </div>
+                <div style="font-weight: 600; font-size: 1.04rem">
+                  TypeORM міграції без болю
+                </div>
+                <div
+                  class="metarow"
+                  style="margin-top: 8px; font-size: 0.78rem"
+                >
+                  <span>@olena</span
+                  ><span
+                    ><svg><use href="#i-heart" /></svg> 8</span
+                  ><span
+                    ><svg><use href="#i-msg" /></svg> 2</span
+                  >
+                </div></a
+              >
+            </div>
+          </div>
+          <!-- TICKET -->
+          <aside class="ticket">
+            <div class="top">
+              <div class="eyebrow" style="margin-bottom: 10px">Your spot</div>
+              <div class="when anton">
+                Fri Aug 15<small>18:00 – 21:00</small>
+              </div>
+              <div class="where">
+                <svg><use href="#i-pin" /></svg>Creative Hub, Kyiv
+              </div>
+              <div class="cap">
+                <div class="row"><span>going</span><span>42 / 100</span></div>
+                <div class="bar"><i style="width: 42%"></i></div>
+              </div>
+              <div class="stack" style="margin-top: 16px">
+                <span class="av" style="background: #ff3d8b; color: #fff"
+                  >VD</span
+                ><span class="av" style="background: #7b5cff; color: #fff"
+                  >OL</span
+                ><span class="av" style="background: #cdff3a; color: #0a090e"
+                  >MK</span
+                ><span
+                  class="av"
+                  style="background: var(--card2); color: var(--muted)"
+                  >+39</span
+                >
+              </div>
+            </div>
+            <div class="perf"></div>
+            <div class="bot">
+              <button
+                class="btn btn-acid btn-block btn-lg"
+                onclick="document.getElementById('reg').classList.add('open')"
+              >
+                Register <svg><use href="#i-arrow" /></svg>
+              </button>
+              <div class="note">FREE · гість або акаунт</div>
+              <button
+                class="btn btn-outline btn-block"
+                style="margin-top: 10px"
+              >
+                Rate event
+              </button>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOGIN -->
+    <section id="login">
+      <div class="wrap">
+        <div class="eyebrow">/ login</div>
+        <div class="split">
+          <div class="authposter">
+            <div class="eyebrow" style="color: rgba(255, 255, 255, 0.8)">
+              Eventino
+            </div>
+            <div class="big anton">Don't<br />miss<br />out.</div>
+            <div style="font-size: 0.92rem; opacity: 0.85; max-width: 30ch">
+              Реєструйся на найкращі івенти міста — гостем або з акаунтом.
+            </div>
+          </div>
+          <div class="authwrap">
+            <div>
+              <h2 class="anton">Welcome<br />back</h2>
+              <div class="muted" style="font-size: 0.9rem; margin-top: 6px">
+                Увійди, щоб керувати своїми івентами
+              </div>
+            </div>
+            <div class="f">
+              <label>Email</label>
+              <div class="inrow">
+                <svg><use href="#i-mail" /></svg
+                ><input placeholder="you@example.com" />
+              </div>
+            </div>
+            <div class="f">
+              <label>Password</label>
+              <div class="inrow">
+                <svg><use href="#i-lock" /></svg
+                ><input type="password" placeholder="••••••••" /><svg
+                  class="eye"
+                >
+                  <use href="#i-eye" />
+                </svg>
+              </div>
+            </div>
+            <button class="btn btn-acid btn-block btn-lg">
+              Log in <svg><use href="#i-arrow" /></svg>
+            </button>
+            <div class="linkrow">
+              Немає акаунта? <a href="#">Зареєструватися →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CREATE EVENT -->
+    <section id="create">
+      <div class="wrap">
+        <div class="eyebrow">/ events/new</div>
+        <h2
+          class="anton"
+          style="font-size: clamp(2.2rem, 5vw, 3.4rem); margin: 10px 0 26px"
+        >
+          Create event
+        </h2>
+        <div class="formgrid">
+          <div class="fieldset">
+            <div class="f">
+              <label>Cover</label>
+              <div class="cover-drop">
+                <svg style="width: 26px; height: 26px">
+                  <use href="#i-image" /></svg
+                ><span style="font-size: 0.88rem"
+                  >Перетягни або обери обкладинку</span
+                ><span class="mono" style="font-size: 0.7rem"
+                  >16:9 · PNG / JPG</span
+                >
+              </div>
+            </div>
+            <div class="f">
+              <label>Title</label
+              ><input class="input" placeholder="NestJS Meetup #12" />
+            </div>
+            <div class="f">
+              <label>Description</label
+              ><textarea
+                class="input"
+                rows="3"
+                placeholder="Про що цей івент…"
+              ></textarea>
+            </div>
+            <div class="two">
+              <div class="f">
+                <label>Starts</label>
+                <div class="inrow">
+                  <svg><use href="#i-cal" /></svg
+                  ><input placeholder="Aug 15, 18:00" />
+                </div>
+              </div>
+              <div class="f">
+                <label>Ends</label>
+                <div class="inrow">
+                  <svg><use href="#i-clock" /></svg
+                  ><input placeholder="Aug 15, 21:00" />
+                </div>
+              </div>
+            </div>
+            <div class="f">
+              <label>Location</label>
+              <div class="inrow">
+                <svg><use href="#i-pin" /></svg
+                ><input placeholder="Creative Hub, Kyiv" />
+              </div>
+            </div>
+            <div class="f">
+              <label>Tags</label>
+              <div class="chips-in">
+                <span class="chip-rm"
+                  >nestjs
+                  <svg style="width: 13px; height: 13px">
+                    <use href="#i-x" /></svg></span
+                ><span class="chip-rm"
+                  >backend
+                  <svg style="width: 13px; height: 13px">
+                    <use href="#i-x" /></svg></span
+                ><input placeholder="add tag…" />
+              </div>
+            </div>
+            <div class="f">
+              <label>Max guests</label>
+              <div class="stepper">
+                <button type="button">−</button><input value="100" /><button
+                  type="button"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <button
+              class="btn btn-acid btn-lg"
+              style="align-self: flex-start; margin-top: 4px"
+            >
+              Publish event <svg><use href="#i-arrow" /></svg>
+            </button>
+          </div>
+          <div class="preview">
+            <div class="eyebrow" style="margin-bottom: 10px">Live preview</div>
+            <article class="card">
+              <div
+                class="poster"
+                style="
+                  background: linear-gradient(150deg, #ff3d8b, #ff8a3d);
+                  color: #fff;
+                "
+              >
+                <span class="pdate">AUG 15</span>
+                <div class="ptitle">NestJS<br />Meetup 12</div>
+              </div>
+              <div class="body">
+                <div class="l1">
+                  <span class="badge b-up">Upcoming</span
+                  ><span class="stars"
+                    ><svg><use href="#i-star" /></svg
+                    ><span class="n">—</span></span
+                  >
+                </div>
+                <div class="metarow">
+                  <span
+                    ><svg><use href="#i-cal" /></svg
+                    ><span class="mono" style="font-size: 0.78rem"
+                      >18:00</span
+                    ></span
+                  ><span
+                    ><svg><use href="#i-pin" /></svg>Creative Hub</span
+                  >
+                </div>
+                <div class="cap">
+                  <div class="row"><span>going</span><span>0 / 100</span></div>
+                  <div class="bar"><i style="width: 0"></i></div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="profile">
+      <div class="wrap">
+        <div class="eyebrow">/ profile/[username]</div>
+        <div class="profbanner" style="margin-top: 16px"></div>
+        <div class="profhead">
+          <div class="profav"></div>
+          <div class="profname">
+            <h2 class="anton">Vadym</h2>
+            <div class="handle">@vadym</div>
+          </div>
+          <div class="profactions">
+            <button class="btn btn-acid">
+              <svg><use href="#i-userplus" /></svg> Follow
+            </button>
+            <button class="btn btn-outline icon-btn" title="Edit profile">
+              <svg><use href="#i-edit" /></svg>
+            </button>
+          </div>
+        </div>
+        <div class="statline">
+          <span><b>12</b> hosting</span><span><b>340</b> followers</span
+          ><span><b>28</b> going</span>
+        </div>
+        <p class="prose profbio">
+          Backend-інженер, організовую NestJS-мітапи в Києві. Пишу про API,
+          TypeORM і Kubernetes.
+        </p>
+        <div class="tabs">
+          <button class="on">Articles</button><button>Hosting</button
+          ><button>Going</button>
+        </div>
+        <div class="grid">
+          <a class="card"
+            ><div class="body" style="gap: 8px">
+              <div class="eyebrow" style="color: var(--acid)">
+                ↳ NestJS Meetup 12
+              </div>
+              <h3>Як ми деплоїли API в k8s</h3>
+              <p class="muted" style="font-size: 0.85rem">
+                Шлях від docker-compose до Helm в одному кластері.
+              </p>
+              <div class="metarow" style="font-size: 0.78rem">
+                <span
+                  ><svg><use href="#i-heart" /></svg> 12</span
+                ><span
+                  ><svg><use href="#i-msg" /></svg> 4</span
+                >
+              </div>
+            </div></a
+          >
+          <a class="card"
+            ><div class="body" style="gap: 8px">
+              <div class="eyebrow" style="color: var(--acid)">
+                ↳ Design Systems
+              </div>
+              <h3>TypeORM міграції без болю</h3>
+              <p class="muted" style="font-size: 0.85rem">
+                Як тримати схему під контролем у проді.
+              </p>
+              <div class="metarow" style="font-size: 0.78rem">
+                <span
+                  ><svg><use href="#i-heart" /></svg> 8</span
+                ><span
+                  ><svg><use href="#i-msg" /></svg> 2</span
+                >
+              </div>
+            </div></a
+          >
+          <a class="card"
+            ><div class="body" style="gap: 8px">
+              <div class="eyebrow" style="color: var(--acid)">↳ TS Conf</div>
+              <h3>Типобезпечний API-клієнт</h3>
+              <p class="muted" style="font-size: 0.85rem">
+                Один контракт на бек і фронт.
+              </p>
+              <div class="metarow" style="font-size: 0.78rem">
+                <span
+                  ><svg><use href="#i-heart" /></svg> 21</span
+                ><span
+                  ><svg><use href="#i-msg" /></svg> 6</span
+                >
+              </div>
+            </div></a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPONENTS -->
+    <section id="components">
+      <div class="wrap">
+        <div class="eyebrow">Components</div>
+        <div class="row" style="margin-top: 16px; gap: 14px">
+          <button class="btn btn-acid">Acid</button
+          ><button class="btn btn-outline">Outline</button
+          ><button class="btn btn-ghost">Ghost</button>
+          <span class="badge b-up">Upcoming</span
+          ><span class="badge b-past">Past</span
+          ><span class="badge b-full">Sold out</span
+          ><span class="badge b-live"><span class="pulse"></span>Live</span>
+          <span class="tagk">nestjs</span>
+          <span class="stars"
+            ><svg><use href="#i-star" /></svg><svg><use href="#i-star" /></svg
+            ><svg><use href="#i-star" /></svg><svg><use href="#i-star" /></svg
+            ><span class="n">4.8</span></span
+          >
+          <span
+            style="
+              color: var(--success);
+              font-weight: 600;
+              font-size: 0.85rem;
+              display: inline-flex;
+              gap: 6px;
+              align-items: center;
+            "
+            ><svg style="width: 16px; height: 16px"><use href="#i-users" /></svg
+            >Registered</span
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL -->
+    <div
+      class="overlay"
+      id="reg"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <div class="eyebrow" style="margin-bottom: 6px">RSVP</div>
+        <h3 class="anton">NestJS Meetup 12</h3>
+        <div class="muted mono" style="font-size: 0.78rem; margin-top: 6px">
+          Fri Aug 15 · 18:00
+        </div>
+        <div class="seg">
+          <button class="on" onclick="seg(this, 1)">As guest</button
+          ><button onclick="seg(this, 0)">Sign in</button>
+        </div>
+        <div class="stack-form">
+          <div id="guest" class="stack-form">
+            <div class="f">
+              <label>Name</label><input class="input" placeholder="Your name" />
+            </div>
+            <div class="f">
+              <label>Email</label
+              ><input class="input" placeholder="you@example.com" />
+            </div>
+          </div>
+          <div class="f">
+            <label
+              >Note
+              <span class="muted" style="font-weight: 400"
+                >· optional</span
+              ></label
+            ><input class="input" placeholder="Dietary, accessibility…" />
+          </div>
+        </div>
+        <div class="note" style="text-align: left; margin: 14px 0">
+          58 of 100 spots left
+        </div>
+        <button class="btn btn-acid btn-block btn-lg">
+          Confirm RSVP <svg><use href="#i-arrow" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function seg(b, guest) {
+        [...b.parentNode.children].forEach((x) => x.classList.remove('on'));
+        b.classList.add('on');
+        document.getElementById('guest').style.display = guest
+          ? 'flex'
+          : 'none';
+      }
+    </script>
+  </body>
+</html>

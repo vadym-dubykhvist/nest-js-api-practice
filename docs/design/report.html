@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Design Research — Events platform</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    max-width: 920px; margin: 0 auto; padding: 40px 24px 80px;
+    line-height: 1.62; color: #0f172a; background: #f8fafc;
+  }
+  h1 { font-size: 2rem; letter-spacing: -0.02em; margin: 0 0 4px; }
+  h2 { font-size: 1.4rem; letter-spacing: -0.01em; margin: 44px 0 12px; padding-top: 14px; border-top: 1px solid #e2e8f0; }
+  h3 { font-size: 1.08rem; margin: 24px 0 6px; }
+  p, li { color: #1e293b; }
+  .sub { color: #64748b; margin-top: 0; }
+  a { color: #4f46e5; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { background: #eef2ff; color: #3730a3; padding: 1px 6px; border-radius: 6px; font-size: 0.86em; }
+  pre { background: #0b0b0f; color: #e2e8f0; padding: 16px; border-radius: 12px; overflow-x: auto; font-size: 0.8rem; line-height: 1.4; }
+  .tldr { background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #3b82f6; border-radius: 12px; padding: 16px 20px; margin: 20px 0; }
+  .tldr strong { color: #1e40af; }
+  figure { margin: 0 0 26px; }
+  figure img { width: 100%; border-radius: 14px; box-shadow: 0 8px 28px -8px rgba(2,6,23,0.18); border: 1px solid #e2e8f0; display: block; }
+  figcaption { color: #475569; font-size: 0.9rem; margin-top: 8px; }
+  .tag { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: #f1f5f9; color: #475569; vertical-align: middle; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.92rem; }
+  th, td { border: 1px solid #e2e8f0; padding: 8px 11px; text-align: left; }
+  th { background: #f1f5f9; font-weight: 600; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; margin: 16px 0; }
+  .sw { border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background:#fff; }
+  .sw .chip { height: 56px; }
+  .sw .meta { padding: 8px 10px; font-size: 0.78rem; }
+  .sw .meta b { display:block; }
+  .sw .meta span { color:#64748b; font-variant-numeric: tabular-nums; }
+  .note { color:#64748b; font-size:0.85rem; }
+</style>
+</head>
+<body>
+  <h1>Design Research — Events platform</h1>
+  <p class="sub">Event-first web app · Next.js + Tailwind v4 + shadcn · 2026-06-04</p>
+
+  <div class="tldr">
+    <strong>TL;DR.</strong> Топ event-продукти (Luma, Partiful, Eventbrite) роблять <b>обкладинку івента героєм</b>, а хром тримають нейтральним і тихим. Беремо цю модель: чистий нейтральний UI + <b>один акцентний колір для Register</b>; колір на екран приносять самі івенти. Реєстрацію — у <b>липку панель</b> (desktop збоку / mobile знизу) з тогглом «гість ↔ увійти».
+  </div>
+
+  <h2>Палітра (core)</h2>
+  <p class="note">Light-значення. Повний набір light/dark + CSS-змінні та <code>@theme</code> для Tailwind v4 — у <a href="design-framework.md">design-framework.md</a>.</p>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#4f46e5"></div><div class="meta"><b>Primary</b><span>#4F46E5</span></div></div>
+    <div class="sw"><div class="chip" style="background:#eef2ff"></div><div class="meta"><b>Accent (tint)</b><span>#EEF2FF</span></div></div>
+    <div class="sw"><div class="chip" style="background:#f59e0b"></div><div class="meta"><b>Rating</b><span>#F59E0B</span></div></div>
+    <div class="sw"><div class="chip" style="background:#16a34a"></div><div class="meta"><b>Success</b><span>#16A34A</span></div></div>
+    <div class="sw"><div class="chip" style="background:#d97706"></div><div class="meta"><b>Warning</b><span>#D97706</span></div></div>
+    <div class="sw"><div class="chip" style="background:#dc2626"></div><div class="meta"><b>Destructive / Full</b><span>#DC2626</span></div></div>
+    <div class="sw"><div class="chip" style="background:#db2777"></div><div class="meta"><b>Live now</b><span>#DB2777</span></div></div>
+    <div class="sw"><div class="chip" style="background:#0f172a"></div><div class="meta"><b>Foreground</b><span>#0F172A</span></div></div>
+    <div class="sw"><div class="chip" style="background:#64748b"></div><div class="meta"><b>Muted text</b><span>#64748B</span></div></div>
+    <div class="sw"><div class="chip" style="background:#e2e8f0"></div><div class="meta"><b>Border</b><span>#E2E8F0</span></div></div>
+    <div class="sw"><div class="chip" style="background:#f1f5f9"></div><div class="meta"><b>Muted surface</b><span>#F1F5F9</span></div></div>
+    <div class="sw"><div class="chip" style="background:#ffffff"></div><div class="meta"><b>Background</b><span>#FFFFFF</span></div></div>
+  </div>
+  <p class="note"><b>Типографіка:</b> Geist Sans (UI) + Geist Mono (дата/час/лічильники, <code>tabular-nums</code>). Заголовки 600–700, tracking −0.02em; body 16/1.6.</p>
+
+  <h2>Recommendations</h2>
+  <ol>
+    <li><b>Event detail = обкладинка-герой + липка панель реєстрації</b> (desktop збоку, mobile bottom-bar).</li>
+    <li><b>Register-модалка з тогглом «Гість / Увійти»</b> — гостю 2-3 поля, юзеру лише note.</li>
+    <li><b>Events list = грід обкладинок + горизонтальний фільтр-бар</b> (tag/location/пошук, badge upcoming/past/full).</li>
+    <li><b>Capacity / status / rating — окремі компоненти-сигнали</b>, не сірий текст.</li>
+    <li><b>Нейтральний хром + один акцент</b> — різнобарв'я тільки в обкладинках.</li>
+  </ol>
+  <pre>DESKTOP /events/[id]
++---------------------------+------------+
+|  [   COVER  16:9      ]   | Aug 15     |
+|  Title  *4.8              | 18:00  Kyiv|
+|  by Host  [Upcoming]      | 42/100 ####|
+|  --tags--                 | [Register] |  &lt;- sticky
+|  About...   ## Articles   |            |
++---------------------------+------------+</pre>
+
+  <h2>Key Examples</h2>
+
+  <figure><img src="references/luma-event-detail.png" alt="Luma event detail">
+  <figcaption>Luma — деталь івента: title/host/date, велика <b>Register</b> в окремій секції, side-panel хоста; чисто й тихо. <span class="tag">Lazyweb</span></figcaption></figure>
+
+  <figure><img src="references/luma-event-detail-mobile.png" alt="Luma event detail mobile">
+  <figcaption>Luma mobile — постер + Register/Contact host; <b>локація прихована до реєстрації</b> (privacy-патерн). <span class="tag">Lazyweb</span></figcaption></figure>
+
+  <figure><img src="references/partiful-discovery.png" alt="Partiful discovery">
+  <figcaption>Partiful — discovery по містах; крупні обкладинки, мінімум хрому. <span class="tag">Lazyweb</span></figcaption></figure>
+
+  <figure><img src="references/partiful-event-detail-mobile.png" alt="Partiful event detail mobile">
+  <figcaption>Partiful mobile — флаєр-cover як герой + bottom action-sheet діями-картками. <span class="tag">Lazyweb</span></figcaption></figure>
+
+  <figure><img src="references/eventbrite-discovery.png" alt="Eventbrite discovery">
+  <figcaption>Eventbrite — hero + пошук, секції (Popular, This Weekend…) гридами карток з date/location/tags. <span class="tag">Lazyweb</span></figcaption></figure>
+
+  <figure><img src="references/figma-events.png" alt="Figma events">
+  <figcaption>Figma — hero з CTA, «Upcoming events» список, фільтрований грід; еталон чистого modern-UI. <span class="tag">Lazyweb</span></figcaption></figure>
+
+  <figure><img src="references/userlane-events-hub.png" alt="Userlane events hub">
+  <figcaption>Userlane — грід upcoming + past + CTA «Create Event»; модель для вашого <code>/me</code>. <span class="tag">Lazyweb</span></figcaption></figure>
+
+  <figure><img src="references/github-events-filters.png" alt="GitHub events filters">
+  <figcaption>GitHub — sidebar-фільтри (формат/тип/тема, clear/apply) + featured-картка. <span class="tag">Lazyweb</span></figcaption></figure>
+
+  <figure><img src="references/apple-invites-cards.png" alt="Apple Invites cards">
+  <figcaption>Apple Invites — інвайт-картки зі <b>стеком аватарів учасників + статус-бейджами</b>; модель для AttendeeStack. <span class="tag">Lazyweb</span></figcaption></figure>
+
+  <figure><img src="references/222-event-detail-rsvp.png" alt="222 event RSVP">
+  <figcaption>222 — деталь з expandable-секціями + bottom-sheet RSVP (Yes/No) у один тап. <span class="tag">Lazyweb</span></figcaption></figure>
+
+  <h2>Patterns / Anti-patterns / Unique</h2>
+  <table>
+    <tr><th>Patterns (table stakes)</th><th>Anti-patterns</th></tr>
+    <tr><td>Cover як герой; дата/час/локація разом</td><td>Строкатий хром поверх барвистих обкладинок</td></tr>
+    <tr><td>Завжди видима головна дія (sticky)</td><td>Довга реєстрація-«стіна» для гостя</td></tr>
+    <tr><td>Status/capacity бейджами; аватари «X going»</td><td>Дата сірим дрібним текстом; статус лише кольором</td></tr>
+  </table>
+  <p><b>Unique (X100):</b> Luma — локація <i>прихована до реєстрації</i>; Partiful — cover-флаєр майже на весь екран; Apple Invites — статус going/maybe прямо на аватарах.</p>
+
+  <h2>Далі</h2>
+  <p>Повний дизайн-фреймворк (палітра light/dark, токени для <code>globals.css</code>, типографіка, spacing/radius/shadow, специфікації компонентів) — <a href="design-framework.md">design-framework.md</a>. Текстова версія дослідження — <a href="report.md">report.md</a>.</p>
+
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://help.luma.com/p/event-themes-and-customization">Luma — Event Themes &amp; Customization</a></li>
+    <li><a href="https://party.pro/luma/">Party.pro — Luma tips (clean aesthetic)</a></li>
+    <li><a href="https://blog.tubikstudio.com/case-study-night-in-berlin-ui-for-event-app/">Tubik — UI for Event App</a></li>
+    <li><a href="https://www.subframe.com/tips/event-booking-website-design-examples">Subframe — Event Booking Design Examples</a></li>
+    <li><a href="https://www.eventmobi.com/blog/best-practices-for-event-app-design/">EventMobi — Best Practices</a></li>
+    <li>Lazyweb screenshots: Luma, Partiful, Eventbrite, Figma, Userlane, GitHub, Apple Invites, 222.</li>
+  </ul>
+</body>
+</html>

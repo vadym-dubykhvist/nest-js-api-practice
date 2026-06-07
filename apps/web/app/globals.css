@@ -2,7 +2,6 @@
 
 /*
  * Design tokens — dark-first "Partiful/Dice" direction.
- * Source of truth: .lazyweb/design-research/.../design-framework.md (§3).
  * Fonts (--font-anton / --font-inter / --font-space-mono) are injected by
  * next/font in app/layout.tsx; we just alias them below.
  */
