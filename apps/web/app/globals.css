@@ -1,19 +1,156 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
+/*
+ * Design tokens — dark-first "Partiful/Dice" direction.
+ * Source of truth: .lazyweb/design-research/.../design-framework.md (§3).
+ * Fonts (--font-anton / --font-inter / --font-space-mono) are injected by
+ * next/font in app/layout.tsx; we just alias them below.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  --background: #0a090e;
+  --foreground: #f4f2fb;
+  --surface: #100e16;
+  --card: #16141d;
+  --card-foreground: #f4f2fb;
+  --elevated: #1c1a26;
+  --popover: #16141d;
+  --popover-foreground: #f4f2fb;
+  --primary: #cdff3a;
+  --primary-foreground: #0a090e;
+  --secondary: #1c1a26;
+  --secondary-foreground: #f4f2fb;
+  --muted: #1c1a26;
+  --muted-foreground: #928da6;
+  --accent: #1c1a26;
+  --accent-foreground: #f4f2fb;
+  --live: #ff3d8b;
+  --live-foreground: #ffffff;
+  --rating: #ffc53a;
+  --destructive: #ff5470;
+  --destructive-foreground: #0a090e;
+  --success: #34d17c;
+  --warning: #ffc53a;
+  --border: #272433;
+  --border-strong: #332f42;
+  --input: #332f42;
+  --ring: #cdff3a;
+  --radius: 0.875rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Expose tokens to Tailwind v4 utilities (bg-card, text-primary, border-border, font-display...). */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-elevated: var(--elevated);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-live: var(--live);
+  --color-live-foreground: var(--live-foreground);
+  --color-rating: var(--rating);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 8px);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-anton);
+  --font-mono: var(--font-space-mono);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  background-image: url('/grain.svg');
+  -webkit-font-smoothing: antialiased;
+}
+
+@utility wrap {
+  @apply mx-auto max-w-[1180px] px-7;
+}
+
+/* ------------------------------------------------------------------ *
+ * Reusable design-system utilities — patterns used 3+ times across the
+ * mockup (design-framework.md). Tokens come from :root above.
+ * Explicit rounded-[..px] on purpose: the --radius scale is remapped,
+ * so arbitrary px keep parity with the framework.
+ * ------------------------------------------------------------------ */
+
+/* Typography */
+@utility anton {
+  @apply font-display font-normal uppercase leading-[0.92] tracking-[0.01em];
+}
+@utility mono {
+  @apply font-mono tabular-nums;
+}
+@utility eyebrow {
+  @apply font-mono text-[0.68rem] uppercase tracking-[0.22em] text-muted-foreground;
+}
+
+/* Surface card + tag chip */
+@utility card {
+  @apply rounded-[18px] border border-border bg-card;
+}
+@utility tag {
+  @apply inline-flex items-center rounded-[8px] border border-border-strong px-2.5 py-1 font-mono text-[0.7rem] tracking-[0.04em] text-muted-foreground;
+}
+
+/* Meta row (icon + text). Inner items: <span class="inline-flex items-center gap-1.5"> */
+@utility metarow {
+  @apply flex items-center gap-4 text-[0.82rem] text-muted-foreground;
+}
+
+/* Status badges: base + variant (e.g. class="badge badge-up") */
+@utility badge {
+  @apply inline-flex items-center gap-1.5 rounded-[7px] px-2.5 py-[5px] font-mono text-[0.64rem] font-bold uppercase tracking-[0.12em];
+}
+@utility badge-up {
+  @apply bg-primary text-primary-foreground;
+}
+@utility badge-live {
+  @apply bg-live text-live-foreground;
+}
+@utility badge-sold {
+  @apply border border-border-strong text-muted-foreground;
+}
+@utility badge-past {
+  @apply bg-elevated text-muted-foreground;
+}
+
+/* Buttons: base + variant + optional size (e.g. class="btn btn-acid btn-lg") */
+@utility btn {
+  @apply inline-flex cursor-pointer items-center gap-2 rounded-[12px] border border-transparent px-[18px] py-2.5 text-[0.88rem] font-semibold transition focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/45;
+}
+@utility btn-acid {
+  @apply bg-primary font-bold text-primary-foreground hover:shadow-[0_0_0_1px_rgba(205,255,58,0.25),0_10px_40px_-8px_rgba(205,255,58,0.35)];
+}
+@utility btn-outline {
+  @apply border-border-strong text-foreground hover:border-foreground;
+}
+@utility btn-ghost {
+  @apply hover:bg-elevated;
+}
+@utility btn-lg {
+  @apply px-[22px] py-3.5 text-[0.98rem];
+}
+@utility btn-block {
+  @apply w-full justify-center py-3.5;
 }

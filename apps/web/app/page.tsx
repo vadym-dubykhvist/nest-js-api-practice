@@ -10,12 +10,11 @@ export default async function HomePage() {
   let error: string | null = null;
 
   try {
-    // Server-side call goes straight to API_URL (default http://localhost:3000).
     const res = await api.events.list({ limit: 20 });
     events = res.events;
     total = res.eventsCount;
   } catch {
-    error = 'API недоступне. Запусти бекенд: `pnpm api` (порт 3000).';
+    error = 'API unavailable';
   }
 
   return (
@@ -23,7 +22,7 @@ export default async function HomePage() {
       <header className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Events</h1>
         <p className="mt-1 text-sm opacity-60">
-          apps/web scaffold готовий — починай писати фронт у{' '}
+          apps/web scaffold ready — start building the frontend in{' '}
           <code className="rounded bg-black/5 px-1 py-0.5">apps/web/app</code>.
         </p>
       </header>
@@ -33,10 +32,10 @@ export default async function HomePage() {
           {error}
         </div>
       ) : events.length === 0 ? (
-        <p className="opacity-60">Поки що немає івентів.</p>
+        <p className="opacity-60">No events yet.</p>
       ) : (
         <>
-          <p className="mb-4 text-sm opacity-60">{total} івент(ів)</p>
+          <p className="mb-4 text-sm opacity-60">{total} event(s)</p>
           <ul className="space-y-3">
             {events.map((event) => (
               <li
@@ -46,7 +45,7 @@ export default async function HomePage() {
                 <div className="font-semibold">{event.title}</div>
                 <div className="mt-1 text-sm opacity-60">
                   {event.location || '—'} · {event.registeredCount}
-                  {event.maxGuests ? `/${event.maxGuests}` : ''} зареєстровано
+                  {event.maxGuests ? `/${event.maxGuests}` : ''} registered
                   {event.rating ? ` · ★ ${event.rating.toFixed(1)}` : ''}
                 </div>
               </li>
