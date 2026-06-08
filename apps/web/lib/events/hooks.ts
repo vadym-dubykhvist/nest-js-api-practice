@@ -1,8 +1,16 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import {
+  useQuery,
+  useSuspenseQuery,
+  UseSuspenseQueryResult,
+} from '@tanstack/react-query';
 
-import type { EventsQuery } from '@events/shared-types';
+import type {
+  EventsQuery,
+  EventsResponse,
+  TagsResponse,
+} from '@events/shared-types';
 
 import {
   eventQueryOptions,
@@ -19,10 +27,16 @@ export function useEvents(query?: EventsQuery) {
   return useQuery(eventsQueryOptions(query));
 }
 
+export function useEventsSuspense(
+  query?: EventsQuery,
+): UseSuspenseQueryResult<EventsResponse, Error> {
+  return useSuspenseQuery(eventsQueryOptions(query));
+}
+
 export function useEvent(id: number) {
   return useQuery(eventQueryOptions(id));
 }
 
-export function useTags() {
-  return useQuery(tagsQueryOptions());
+export function useTags(): UseSuspenseQueryResult<TagsResponse, Error> {
+  return useSuspenseQuery(tagsQueryOptions());
 }

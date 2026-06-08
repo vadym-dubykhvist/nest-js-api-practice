@@ -18,6 +18,7 @@ export interface EventsQueryInterface {
   tag?: string;
   location?: string;
   author?: string;
+  search?: string;
   limit?: number;
   offset?: number;
 }

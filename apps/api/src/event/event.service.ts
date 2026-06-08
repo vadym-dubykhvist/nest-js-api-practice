@@ -1,4 +1,4 @@
-import { DataSource, DeleteResult, Repository } from 'typeorm';
+import { DataSource, DeleteResult, In, Repository } from 'typeorm';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -16,6 +16,7 @@ import {
   RegistrationResponseInterface,
 } from '@app/event/types/event.interfaces';
 import { ExceptionService } from '@app/shared/services/exception.service';
+import { TagEntity } from '@app/tag/tag.entity';
 import { UserEntity } from '@app/user/user.entity';
 
 @Injectable()
@@ -29,6 +30,8 @@ export class EventService {
     private readonly ratingRepository: Repository<EventRatingEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(TagEntity)
+    private readonly tagRepository: Repository<TagEntity>,
     private readonly dataSource: DataSource,
     private readonly exceptionService: ExceptionService,
   ) {}
@@ -41,6 +44,13 @@ export class EventService {
 
     if (query.tag) {
       qb.andWhere('events.tags LIKE :tag', { tag: `%${query.tag}%` });
+    }
+
+    if (query.search) {
+      qb.andWhere(
+        '(events.title ILIKE :search OR events.description ILIKE :search)',
+        { search: `%${query.search}%` },
+      );
     }
 
     if (query.location) {
@@ -64,8 +74,11 @@ export class EventService {
 
     const eventsCount = await qb.getCount();
 
-    if (query.limit) qb.limit(query.limit);
-    if (query.offset) qb.offset(query.offset);
+    // Query-string params arrive as strings; TypeORM's limit/offset need numbers.
+    const limit = Number(query.limit);
+    const offset = Number(query.offset);
+    if (Number.isFinite(limit) && limit > 0) qb.limit(limit);
+    if (Number.isFinite(offset) && offset > 0) qb.offset(offset);
 
     const events = await qb.getMany();
     return { events, eventsCount };
@@ -105,7 +118,35 @@ export class EventService {
     event.tags = dto.tags ?? [];
     event.author = currentUser;
 
-    return await this.eventRepository.save(event);
+    const saved = await this.eventRepository.save(event);
+    await this.syncTags(saved.tags);
+
+    return saved;
+  }
+
+  /**
+   * Keeps the `tags` lookup table in sync with the tags used on events, so
+   * GET /tags can return every tag that has ever been used. Inserts only the
+   * names that aren't already there (no unique constraint on tags.name, so we
+   * diff against existing rows instead of relying on ON CONFLICT).
+   */
+  private async syncTags(tags: string[]): Promise<void> {
+    const unique = [...new Set(tags.filter(Boolean))];
+    if (unique.length === 0) return;
+
+    const existing = await this.tagRepository.find({
+      where: { name: In(unique) },
+      select: { name: true },
+    });
+    const existingNames = new Set(existing.map((tag) => tag.name));
+
+    const toInsert = unique
+      .filter((name) => !existingNames.has(name))
+      .map((name) => ({ name }));
+
+    if (toInsert.length > 0) {
+      await this.tagRepository.insert(toInsert);
+    }
   }
 
   async update(
@@ -135,7 +176,10 @@ export class EventService {
       );
     }
 
-    return await this.eventRepository.save(event);
+    const saved = await this.eventRepository.save(event);
+    await this.syncTags(saved.tags);
+
+    return saved;
   }
 
   async delete(id: number, currentUserId: number): Promise<DeleteResult> {

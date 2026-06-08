@@ -155,6 +155,8 @@ export interface EventsQuery {
   tag?: string;
   location?: string;
   author?: string;
+  /** Free-text search over title + description. */
+  search?: string;
   limit?: number;
   offset?: number;
 }
