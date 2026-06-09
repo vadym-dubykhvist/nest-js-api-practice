@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
@@ -12,6 +13,11 @@ import {
   parseEventsSearchParams,
 } from '@/lib/events/search-params';
 import { getQueryClient } from '@/lib/get-query-client';
+
+export const metadata: Metadata = {
+  title: 'Events',
+  description: 'Browse upcoming events — filter by tag, search and location.',
+};
 
 export default async function EventsPage({
   searchParams,

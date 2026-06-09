@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 
 import { EventForm } from '@/components/events/event-form';
 
-export const metadata: Metadata = { title: 'New event · Eventino' };
+export const metadata: Metadata = {
+  title: 'New event',
+  robots: { index: false },
+};
 
 export default function NewEventPage() {
   return (

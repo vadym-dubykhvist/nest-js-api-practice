@@ -10,6 +10,7 @@ import { Nav } from '@/components/nav';
 import { currentUserQueryOptions } from '@/lib/auth/queries';
 import { getServerToken } from '@/lib/auth/token.server';
 import { getQueryClient } from '@/lib/get-query-client';
+import { siteUrl } from '@/lib/site';
 
 // next/font self-hosts the fonts and exposes them as CSS variables that
 // globals.css aliases to --font-display / --font-sans / --font-mono.
@@ -32,8 +33,17 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Eventino',
+  metadataBase: new URL(siteUrl),
+  // Pages set only their own title; the template appends the brand.
+  title: { default: 'Eventino', template: '%s · Eventino' },
   description: 'Events platform — register, discuss, rate.',
+  openGraph: {
+    siteName: 'Eventino',
+    type: 'website',
+    title: 'Eventino',
+    description: 'Events platform — register, discuss, rate.',
+  },
+  twitter: { card: 'summary_large_image' },
 };
 
 export default async function RootLayout({

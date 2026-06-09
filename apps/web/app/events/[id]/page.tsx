@@ -19,7 +19,22 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   try {
     const { event } = await loadEvent(id, await getServerToken());
-    return { title: `${event.title} · Eventino` };
+    const description =
+      event.description ||
+      `${event.title}${event.location ? ` · ${event.location}` : ''}`;
+    const url = `/events/${id}`;
+    return {
+      title: event.title,
+      description,
+      alternates: { canonical: url },
+      openGraph: {
+        title: event.title,
+        description,
+        type: 'website',
+        url,
+        images: event.image ? [{ url: event.image }] : undefined,
+      },
+    };
   } catch {
     return {};
   }
