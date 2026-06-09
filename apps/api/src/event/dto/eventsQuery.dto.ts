@@ -19,6 +19,11 @@ export class EventsQueryDto {
   @IsString()
   readonly author?: string;
 
+  /** Username whose registered ("going") events to return. */
+  @IsOptional()
+  @IsString()
+  readonly attending?: string;
+
   @IsOptional()
   @IsString()
   readonly search?: string;

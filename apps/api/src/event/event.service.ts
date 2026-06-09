@@ -77,6 +77,27 @@ export class EventService {
       }
     }
 
+    // "Going": events the named user has a registration for.
+    if (query.attending) {
+      const attendee = await this.userRepository.findOne({
+        where: { username: query.attending },
+      });
+      if (!attendee) {
+        return { events: [], eventsCount: 0 };
+      }
+      const registrations = await this.registrationRepository.find({
+        where: { user: { id: attendee.id } },
+        relations: { event: true },
+      });
+      const eventIds = registrations.map(
+        (registration) => registration.event.id,
+      );
+      if (eventIds.length === 0) {
+        return { events: [], eventsCount: 0 };
+      }
+      qb.andWhere('events.id IN (:...eventIds)', { eventIds });
+    }
+
     qb.orderBy('events.startDate', 'ASC');
 
     const eventsCount = await qb.getCount();

@@ -37,6 +37,7 @@ export interface Profile {
   bio: string;
   image: string;
   following: boolean;
+  followersCount: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -160,6 +161,8 @@ export interface EventsQuery {
   tag?: string;
   location?: string;
   author?: string;
+  /** Username whose registered ("going") events to return. */
+  attending?: string;
   /** Free-text search over title + description. */
   search?: string;
   limit?: number;

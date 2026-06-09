@@ -10,13 +10,23 @@ import {
 import { api } from '@events/api-client';
 import type { ArticlesResponse } from '@events/shared-types';
 
-import { articleKeys, eventArticlesQueryOptions } from '@/lib/articles/queries';
+import {
+  articleKeys,
+  authorArticlesQueryOptions,
+  eventArticlesQueryOptions,
+} from '@/lib/articles/queries';
 import { getToken } from '@/lib/auth/token';
 
 export function useEventArticlesSuspense(
   eventId: number,
 ): UseSuspenseQueryResult<ArticlesResponse, Error> {
   return useSuspenseQuery(eventArticlesQueryOptions(eventId, getToken()));
+}
+
+export function useAuthorArticlesSuspense(
+  username: string,
+): UseSuspenseQueryResult<ArticlesResponse, Error> {
+  return useSuspenseQuery(authorArticlesQueryOptions(username, getToken()));
 }
 
 /**

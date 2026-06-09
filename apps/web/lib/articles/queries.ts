@@ -26,3 +26,16 @@ export function eventArticlesQueryOptions(eventId: number, token?: string | null
     enabled: Number.isFinite(eventId),
   });
 }
+
+/** Every article authored by a user — the profile page's Articles tab. */
+export function authorArticlesQueryOptions(
+  username: string,
+  token?: string | null,
+) {
+  const query: ArticlesQuery = { author: username };
+  return queryOptions({
+    queryKey: articleKeys.list(query),
+    queryFn: () => api.articles.list(query, token ? { token } : undefined),
+    enabled: !!username,
+  });
+}

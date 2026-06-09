@@ -47,6 +47,7 @@ export class ProfileService {
     return {
       ...user,
       following: follow,
+      followersCount: await this.getFollowersCount(user.id),
     };
   }
 
@@ -99,6 +100,7 @@ export class ProfileService {
     return {
       ...user,
       following: true,
+      followersCount: await this.getFollowersCount(user.id),
     };
   }
 
@@ -151,7 +153,12 @@ export class ProfileService {
     return {
       ...user,
       following: false,
+      followersCount: await this.getFollowersCount(user.id),
     };
+  }
+
+  private getFollowersCount(userId: number): Promise<number> {
+    return this.followRepository.count({ where: { followingId: userId } });
   }
 
   buildProfileResponse(profile: ProfileType): ProfileResponseInterface {
@@ -161,6 +168,7 @@ export class ProfileService {
         bio: profile.bio,
         image: profile.image,
         following: profile.following,
+        followersCount: profile.followersCount,
       },
     };
   }

@@ -37,6 +37,7 @@ describe('Profiles (e2e)', () => {
         bio: '',
         image: '',
         following: false,
+        followersCount: 0,
       });
     });
 
@@ -88,6 +89,7 @@ describe('Profiles (e2e)', () => {
       expect(response.body.profile).toMatchObject({
         username: target.username,
         following: true,
+        followersCount: 1,
       });
 
       const rows = await dataSource.query<
