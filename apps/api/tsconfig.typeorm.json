@@ -1,0 +1,19 @@
+// Config used ONLY by the TypeORM CLI (db:migrate / db:seed / db:drop), run
+// through ts-node. The base tsconfig is "nodenext" (module + moduleResolution +
+// resolvePackageJsonExports), which ts-node 10.9 can't run when the CLI loads
+// the datasource via require() — it errors on the option combo and stops
+// resolving the @app/* paths. Falling back to commonjs/node here (and dropping
+// resolvePackageJsonExports) keeps the CLI on the path where tsconfig-paths and
+// the legacy decorator emit both work. The app itself still uses the nodenext
+// base config (dev server + nest build).
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolvePackageJsonExports": false
+  },
+  "ts-node": {
+    "transpileOnly": true
+  }
+}

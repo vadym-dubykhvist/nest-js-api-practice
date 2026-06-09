@@ -3,9 +3,11 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { CommentEntity } from '@app/comment/comment.entity';
 import { EventEntity } from '@app/event/event.entity';
 import { UserEntity } from '@app/user/user.entity';
 
@@ -48,4 +50,14 @@ export class ArticleEntity {
 
   @ManyToOne(() => EventEntity, { nullable: true, onDelete: 'SET NULL' })
   event: EventEntity | null;
+
+  // Inverse side only (no column). Enables loadRelationCountAndMap for commentsCount.
+  @OneToMany(() => CommentEntity, (comment) => comment.article)
+  comments: CommentEntity[];
+
+  // Not persisted: mapped per-query by loadRelationCountAndMap.
+  commentsCount?: number;
+
+  // Not persisted: whether the current viewer has favorited this article.
+  favorited?: boolean;
 }

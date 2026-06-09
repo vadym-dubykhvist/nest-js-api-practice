@@ -18,6 +18,7 @@ const createMockRepository = <
   findOne: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
+  count: jest.fn().mockResolvedValue(0),
 });
 
 describe('ProfileService', () => {
@@ -66,6 +67,7 @@ describe('ProfileService', () => {
       const profileUser = buildUser();
       userRepository.findOne!.mockResolvedValue(profileUser);
       followRepository.findOne!.mockResolvedValue({ id: 1 });
+      followRepository.count!.mockResolvedValue(3);
 
       const result = await service.getProfile(5, 'jane');
 
@@ -75,7 +77,11 @@ describe('ProfileService', () => {
       expect(followRepository.findOne).toHaveBeenCalledWith({
         where: { followerId: 5, followingId: profileUser.id },
       });
+      expect(followRepository.count).toHaveBeenCalledWith({
+        where: { followingId: profileUser.id },
+      });
       expect(result.following).toBe(true);
+      expect(result.followersCount).toBe(3);
     });
 
     it('returns following=false for unauthenticated viewer without querying follows', async () => {
@@ -180,6 +186,7 @@ describe('ProfileService', () => {
       const profile = {
         ...buildUser(),
         following: true,
+        followersCount: 7,
       };
 
       expect(service.buildProfileResponse(profile)).toEqual({
@@ -188,6 +195,7 @@ describe('ProfileService', () => {
           bio: profile.bio,
           image: profile.image,
           following: true,
+          followersCount: 7,
         },
       });
     });

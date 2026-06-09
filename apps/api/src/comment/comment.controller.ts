@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -28,7 +27,6 @@ import {
   CommentResponseInterface,
   CommentsResponseInterface,
 } from '@app/comment/types/commentResponse.interfaces';
-import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
 import { User } from '@app/user/decorators/user.decorator';
 import { AuthGuard } from '@app/user/guards/auth.guard';
 import { UserEntity } from '@app/user/user.entity';
@@ -83,7 +81,6 @@ export class CommentController {
     description: 'Article or parent comment not found.',
   })
   @ApiResponse({ status: 422, description: 'Validation failed.' })
-  @UsePipes(new BackendValidationPipe())
   async createComment(
     @Param('slug') slug: string,
     @User() currentUser: UserEntity,
@@ -126,7 +123,6 @@ export class CommentController {
   })
   @ApiResponse({ status: 404, description: 'Article or comment not found.' })
   @ApiResponse({ status: 422, description: 'Validation failed.' })
-  @UsePipes(new BackendValidationPipe())
   async updateComment(
     @Param('slug') slug: string,
     @Param('id', ParseIntPipe) commentId: number,

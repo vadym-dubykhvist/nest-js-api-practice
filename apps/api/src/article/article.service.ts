@@ -15,8 +15,10 @@ import {
   ArticlesResponseInterface,
 } from '@app/article/types/articleResponse.interfaces';
 import { EventEntity } from '@app/event/event.entity';
+import { RegistrationEntity } from '@app/event/registration.entity';
 import { FollowEntity } from '@app/profile/follow.entity';
 import { ExceptionService } from '@app/shared/services/exception.service';
+import { mergeDefined } from '@app/shared/utils/merge-defined';
 import { UserEntity } from '@app/user/user.entity';
 
 @Injectable()
@@ -30,6 +32,8 @@ export class ArticleService {
     private readonly followRepository: Repository<FollowEntity>,
     @InjectRepository(EventEntity)
     private readonly eventRepository: Repository<EventEntity>,
+    @InjectRepository(RegistrationEntity)
+    private readonly registrationRepository: Repository<RegistrationEntity>,
     private dataSource: DataSource,
     private readonly exceptionService: ExceptionService,
   ) {}
@@ -42,7 +46,8 @@ export class ArticleService {
       .getRepository(ArticleEntity)
       .createQueryBuilder('articles')
       .leftJoinAndSelect('articles.author', 'author')
-      .leftJoinAndSelect('articles.event', 'event');
+      .leftJoinAndSelect('articles.event', 'event')
+      .loadRelationCountAndMap('articles.commentsCount', 'articles.comments');
 
     if (query.tag) {
       queryBuilder.andWhere('articles.tagList LIKE :tag', {
@@ -141,6 +146,7 @@ export class ArticleService {
       .getRepository(ArticleEntity)
       .createQueryBuilder('articles')
       .leftJoinAndSelect('articles.author', 'author')
+      .loadRelationCountAndMap('articles.commentsCount', 'articles.comments')
       .where('articles.authorId IN (:...followingUserIds)', {
         followingUserIds,
       });
@@ -160,6 +166,26 @@ export class ArticleService {
     const articles = await queryBuilder.getMany();
 
     return { articles: articles, articlesCount: articlesCount };
+  }
+
+  // Only the event host or a registered attendee may write/relink an article.
+  private async assertCanWriteForEvent(
+    event: EventEntity,
+    currentUserId: number,
+  ): Promise<void> {
+    if (event.author.id === currentUserId) {
+      return;
+    }
+    const registration = await this.registrationRepository.findOne({
+      where: { event: { id: event.id }, user: { id: currentUserId } },
+    });
+    if (!registration) {
+      this.exceptionService.throwHttpException(
+        'event',
+        'only the event host or an attendee can write an article',
+        HttpStatus.FORBIDDEN,
+      );
+    }
   }
 
   async createArticle(
@@ -190,6 +216,8 @@ export class ArticleService {
           HttpStatus.NOT_FOUND,
         );
       }
+
+      await this.assertCanWriteForEvent(event, currentUser.id);
       article.event = event;
     }
 
@@ -208,6 +236,30 @@ export class ArticleService {
         'not found',
         HttpStatus.NOT_FOUND,
       );
+    }
+
+    return article;
+  }
+
+  // Single-article read enriched with the current viewer's favorite state —
+  // mirrors EventService.findByIdForUser (the list endpoint already does this).
+  async getArticleForUser(
+    slug: string,
+    currentUserId?: number,
+  ): Promise<ArticleEntity> {
+    const article = await this.getArticle(slug);
+    article.favorited = false;
+
+    if (currentUserId) {
+      const currentUser = await this.userRepository.findOne({
+        where: { id: currentUserId },
+        relations: ['favorites'],
+      });
+      if (currentUser) {
+        article.favorited = currentUser.favorites.some(
+          (favorite) => favorite.id === article.id,
+        );
+      }
     }
 
     return article;
@@ -245,7 +297,7 @@ export class ArticleService {
       );
     }
 
-    Object.assign(article, updateArticleDto);
+    mergeDefined(article, updateArticleDto);
 
     if (updateArticleDto.title) {
       article.slug = this.getSlug(updateArticleDto.title);
@@ -264,6 +316,7 @@ export class ArticleService {
           HttpStatus.NOT_FOUND,
         );
       }
+      await this.assertCanWriteForEvent(event, currentUserId);
       article.event = event;
     }
 

@@ -10,7 +10,6 @@ import {
   Post,
   Query,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -25,17 +24,16 @@ import {
 } from '@nestjs/swagger';
 
 import { CreateEventDto } from '@app/event/dto/createEvent.dto';
+import { EventsQueryDto } from '@app/event/dto/eventsQuery.dto';
 import { RateEventDto } from '@app/event/dto/rateEvent.dto';
 import { RegisterEventDto } from '@app/event/dto/registerEvent.dto';
 import { UpdateEventDto } from '@app/event/dto/updateEvent.dto';
 import { EventService } from '@app/event/event.service';
 import type {
   EventResponseInterface,
-  EventsQueryInterface,
   EventsResponseInterface,
   RegistrationResponseInterface,
 } from '@app/event/types/event.interfaces';
-import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
 import { User } from '@app/user/decorators/user.decorator';
 import { AuthGuard } from '@app/user/guards/auth.guard';
 import { UserEntity } from '@app/user/user.entity';
@@ -56,7 +54,7 @@ export class EventController {
   @ApiQuery({ name: 'offset', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Events returned.' })
   async getEvents(
-    @Query() query: EventsQueryInterface,
+    @Query() query: EventsQueryDto,
   ): Promise<EventsResponseInterface> {
     return await this.eventService.findAll(query);
   }
@@ -69,8 +67,9 @@ export class EventController {
   @ApiResponse({ status: 404, description: 'Event was not found.' })
   async getEvent(
     @Param('id', ParseIntPipe) id: number,
+    @User() currentUser: UserEntity | null,
   ): Promise<EventResponseInterface> {
-    const event = await this.eventService.findById(id);
+    const event = await this.eventService.findByIdForUser(id, currentUser?.id);
     return this.eventService.buildEventResponse(event);
   }
 
@@ -95,7 +94,6 @@ export class EventController {
     description:
       'Validation failed (missing/invalid fields, or endDate not after startDate).',
   })
-  @UsePipes(new BackendValidationPipe())
   async createEvent(
     @User() currentUser: UserEntity,
     @Body('event') dto: CreateEventDto,
@@ -130,7 +128,6 @@ export class EventController {
     status: 422,
     description: 'Validation failed or endDate is not after startDate.',
   })
-  @UsePipes(new BackendValidationPipe())
   async updateEvent(
     @Param('id', ParseIntPipe) id: number,
     @User('id') currentUserId: number,
@@ -187,7 +184,6 @@ export class EventController {
     description:
       'Anonymous registration is missing email or name, or fields are invalid.',
   })
-  @UsePipes(new BackendValidationPipe())
   async register(
     @Param('id', ParseIntPipe) id: number,
     @User() currentUser: UserEntity | null,
@@ -246,7 +242,6 @@ export class EventController {
     status: 422,
     description: 'Score is missing or out of the 1-5 range.',
   })
-  @UsePipes(new BackendValidationPipe())
   async rate(
     @Param('id', ParseIntPipe) id: number,
     @User() currentUser: UserEntity,
@@ -281,7 +276,6 @@ export class EventController {
     status: 422,
     description: 'Score is missing or out of the 1-5 range.',
   })
-  @UsePipes(new BackendValidationPipe())
   async updateRating(
     @Param('id', ParseIntPipe) id: number,
     @User('id') currentUserId: number,

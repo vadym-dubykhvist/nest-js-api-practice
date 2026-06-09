@@ -103,6 +103,9 @@ body {
 @utility eyebrow {
   @apply font-mono text-[0.68rem] uppercase tracking-[0.22em] text-muted-foreground;
 }
+@utility note {
+  @apply mt-2.5 text-center font-mono text-[0.72rem] text-muted-foreground;
+}
 
 /* Surface card + tag chip */
 @utility card {

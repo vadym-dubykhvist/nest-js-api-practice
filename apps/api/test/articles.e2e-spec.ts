@@ -160,6 +160,56 @@ describe('Articles (e2e)', () => {
 
       expect(response.body.errors).toEqual({ event: ['not found'] });
     });
+
+    it('lets a registered attendee write an article for the event', async () => {
+      const host = await registerUser(app, { username: 'host' });
+      const attendee = await registerUser(app, { username: 'attendee' });
+      const event = await createEvent(host.token);
+
+      await http
+        .post(`/api/events/${event.id}/register`)
+        .set(authHeader(attendee.token))
+        .send({ registration: {} })
+        .expect(201);
+
+      const response = await http
+        .post('/api/articles')
+        .set(authHeader(attendee.token))
+        .send({
+          article: {
+            title: 'As an attendee',
+            description: 'desc',
+            body: 'body',
+            eventId: event.id,
+          },
+        })
+        .expect(201);
+
+      expect(response.body.article.event).toMatchObject({ id: event.id });
+    });
+
+    it('forbids writing an article for an event you neither host nor attend', async () => {
+      const host = await registerUser(app, { username: 'host' });
+      const outsider = await registerUser(app, { username: 'outsider' });
+      const event = await createEvent(host.token);
+
+      const response = await http
+        .post('/api/articles')
+        .set(authHeader(outsider.token))
+        .send({
+          article: {
+            title: 'Not allowed',
+            description: 'desc',
+            body: 'body',
+            eventId: event.id,
+          },
+        })
+        .expect(403);
+
+      expect(response.body.errors).toEqual({
+        event: ['only the event host or an attendee can write an article'],
+      });
+    });
   });
 
   describe('GET /api/articles', () => {
@@ -364,6 +414,37 @@ describe('Articles (e2e)', () => {
       });
     });
 
+    it('flags the article as favorited for the viewer who favorited it', async () => {
+      const author = await registerUser(app, { username: 'author' });
+      const fan = await registerUser(app, { username: 'fan' });
+      const article = await createArticle(app, author.token);
+
+      await favoriteArticle(fan.token, article.slug);
+
+      const response = await http
+        .get(`/api/articles/${article.slug}`)
+        .set(authHeader(fan.token))
+        .expect(200);
+
+      expect(response.body.article.favorited).toBe(true);
+    });
+
+    it('returns favorited=false for a different viewer', async () => {
+      const author = await registerUser(app, { username: 'author' });
+      const fan = await registerUser(app, { username: 'fan' });
+      const other = await registerUser(app, { username: 'other' });
+      const article = await createArticle(app, author.token);
+
+      await favoriteArticle(fan.token, article.slug);
+
+      const response = await http
+        .get(`/api/articles/${article.slug}`)
+        .set(authHeader(other.token))
+        .expect(200);
+
+      expect(response.body.article.favorited).toBe(false);
+    });
+
     it('includes the linked event when the article belongs to one', async () => {
       const author = await registerUser(app);
       const event = await createEvent(author.token);
@@ -491,6 +572,32 @@ describe('Articles (e2e)', () => {
         title: expect.any(Array),
         description: expect.any(Array),
         body: expect.any(Array),
+      });
+    });
+
+    it('forbids re-linking an article to an event the author neither hosts nor attends', async () => {
+      const author = await registerUser(app, { username: 'author' });
+      const host = await registerUser(app, { username: 'host' });
+      const article = await createArticle(app, author.token, {
+        title: 'My article',
+      });
+      const event = await createEvent(host.token);
+
+      const response = await http
+        .patch(`/api/articles/${article.slug}`)
+        .set(authHeader(author.token))
+        .send({
+          article: {
+            title: 'My article',
+            description: 'd',
+            body: 'b',
+            eventId: event.id,
+          },
+        })
+        .expect(403);
+
+      expect(response.body.errors).toEqual({
+        event: ['only the event host or an attendee can write an article'],
       });
     });
   });

@@ -200,6 +200,36 @@ describe('Events (e2e)', () => {
       expect(response.body).toEqual({ events: [], eventsCount: 0 });
     });
 
+    it('filters by attending username', async () => {
+      const author = await registerUser(app, { username: 'host' });
+      const goer = await registerUser(app, { username: 'goer' });
+
+      const attended = await createEvent(author.token, { title: 'Attended' });
+      await createEvent(author.token, { title: 'Skipped' });
+      await registerForEvent(goer.token, attended.id);
+
+      const response = await http
+        .get('/api/events')
+        .query({ attending: 'goer' })
+        .expect(200);
+
+      expect(response.body.eventsCount).toBe(1);
+      expect(response.body.events[0].title).toBe('Attended');
+    });
+
+    it('returns an empty list when the attendee has no registrations', async () => {
+      const author = await registerUser(app, { username: 'host2' });
+      await createEvent(author.token, { title: 'Nobody' });
+      await registerUser(app, { username: 'lonely' });
+
+      const response = await http
+        .get('/api/events')
+        .query({ attending: 'lonely' })
+        .expect(200);
+
+      expect(response.body).toEqual({ events: [], eventsCount: 0 });
+    });
+
     it('filters by tag', async () => {
       const author = await registerUser(app);
 

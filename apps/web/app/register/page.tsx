@@ -19,6 +19,7 @@ import {
 import { AuthField } from '@/components/auth/auth-field';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { useRegister } from '@/lib/auth/hooks';
+import { safeNext } from '@/lib/auth/redirect';
 import { registerSchema, type RegisterValues } from '@/lib/auth/schemas';
 import { applyApiErrors } from '@/lib/form';
 
@@ -36,7 +37,10 @@ export default function RegisterPage() {
   const onSubmit = form.handleSubmit(async (values) => {
     try {
       await register.mutateAsync(values);
-      router.replace('/');
+      const next = safeNext(
+        new URLSearchParams(window.location.search).get('next'),
+      );
+      router.replace(next);
       router.refresh();
     } catch (error) {
       applyApiErrors(error, form.setError, ['username', 'email', 'password']);
