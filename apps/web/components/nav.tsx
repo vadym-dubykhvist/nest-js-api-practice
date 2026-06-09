@@ -1,7 +1,8 @@
 'use client';
 
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { ArrowUpRight, LogOut, Search } from 'lucide-react';
 
@@ -17,6 +18,33 @@ export function Nav() {
   const { data: user } = useCurrentUser();
   const logout = useLogout();
   const pathname = usePathname();
+  const router = useRouter();
+  const [search, setSearch] = useState('');
+  const typed = useRef(false);
+
+  // Send the query to the events page — push from elsewhere (so Back still
+  // works), replace when already there; skip if we're already on that URL.
+  const navigate = useCallback(
+    (q: string) => {
+      const target = q ? `/events?search=${encodeURIComponent(q)}` : '/events';
+      if (window.location.pathname + window.location.search === target) return;
+      if (window.location.pathname === '/events') router.replace(target);
+      else router.push(target);
+    },
+    [router],
+  );
+
+  // Debounced auto-search: fire ~1s after the user stops typing (never on mount).
+  useEffect(() => {
+    if (!typed.current) return;
+    const t = setTimeout(() => navigate(search.trim()), 1000);
+    return () => clearTimeout(t);
+  }, [search, navigate]);
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    navigate(search.trim());
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
@@ -34,13 +62,22 @@ export function Nav() {
           Eventino
         </Link>
 
-        <label className="ml-2 hidden max-w-[330px] flex-1 items-center gap-2 rounded-xl border border-border-strong bg-card px-3.5 py-2.5 text-muted-foreground sm:flex">
+        <form
+          onSubmit={onSubmit}
+          className="ml-2 hidden max-w-[330px] flex-1 items-center gap-2 rounded-xl border border-border-strong bg-card px-3.5 py-2.5 text-muted-foreground focus-within:border-foreground sm:flex"
+        >
           <Search className="h-[18px] w-[18px]" />
           <input
+            value={search}
+            onChange={(e) => {
+              typed.current = true;
+              setSearch(e.target.value);
+            }}
             className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
             placeholder="Search the night…"
+            aria-label="Search events"
           />
-        </label>
+        </form>
 
         <div className="flex-1" />
 
