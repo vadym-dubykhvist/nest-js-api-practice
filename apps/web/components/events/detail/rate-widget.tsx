@@ -2,17 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { Star } from 'lucide-react';
 
 import type { Event } from '@events/shared-types';
 
 import { useCurrentUser } from '@/lib/auth/hooks';
+import { withNext } from '@/lib/auth/redirect';
 import { useRateEvent } from '@/lib/events/hooks';
 
 export function RateWidget({ event }: { event: Event }) {
   const { data: user } = useCurrentUser();
   const rate = useRateEvent(event.id);
+  const pathname = usePathname();
   const [hover, setHover] = useState(0);
 
   const current = event.myRating ?? 0;
@@ -20,7 +23,7 @@ export function RateWidget({ event }: { event: Event }) {
 
   if (!user) {
     return (
-      <Link href="/login" className="btn btn-outline btn-block mt-3">
+      <Link href={withNext('/login', pathname)} className="btn btn-outline btn-block mt-3">
         Sign in to rate
       </Link>
     );

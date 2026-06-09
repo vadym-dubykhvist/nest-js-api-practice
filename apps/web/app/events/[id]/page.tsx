@@ -1,49 +1,45 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-
-import { ApiError } from '@events/api-client';
-
-import { EventDetail } from '@/components/events/detail/event-detail';
+import { EventDetailLoader } from '@/components/events/detail/event-detail-loader';
 import { EventDetailSkeleton } from '@/components/events/detail/event-detail-skeleton';
-import { eventArticlesQueryOptions } from '@/lib/articles/queries';
 import { getServerToken } from '@/lib/auth/token.server';
-import { eventQueryOptions } from '@/lib/events/queries';
-import { getQueryClient } from '@/lib/get-query-client';
+import { loadEvent } from '@/lib/events/load-event.server';
 
-export default async function EventPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+type Params = { params: Promise<{ id: string }> };
+
+// Title only (deduped with the island via loadEvent's cache()). The 404 is
+// owned by the island: a data-dependent 404 can't set a hard status anyway once
+// the shell has streamed, so we don't duplicate it here — just fall back.
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { id: idParam } = await params;
+  const id = Number(idParam);
+  if (!Number.isInteger(id) || id <= 0) return {};
+
+  try {
+    const { event } = await loadEvent(id, await getServerToken());
+    return { title: `${event.title} · Eventino` };
+  } catch {
+    return {};
+  }
+}
+
+export default async function EventPage({ params }: Params) {
   const { id: idParam } = await params;
   const id = Number(idParam);
   if (!Number.isInteger(id) || id <= 0) notFound();
 
-  const token = await getServerToken();
-  const queryClient = getQueryClient();
-
-  // Await the event itself so a missing id renders a real 404; the related
-  // articles stay un-awaited so they stream into their own <Suspense>.
-  try {
-    await queryClient.fetchQuery(eventQueryOptions(id, token));
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) notFound();
-    throw error;
-  }
-  void queryClient.prefetchQuery(eventArticlesQueryOptions(id, token));
-
+  // Static shell; the dynamic island (cookie + event fetch) streams into the
+  // <Suspense> behind the skeleton, so the boundary is real and PPR-ready.
   return (
     <main>
       <section className="pt-[54px] pb-20">
         <div className="wrap">
           <div className="eyebrow mb-4">Event</div>
-          <HydrationBoundary state={dehydrate(queryClient)}>
-            <Suspense fallback={<EventDetailSkeleton />}>
-              <EventDetail id={id} />
-            </Suspense>
-          </HydrationBoundary>
+          <Suspense fallback={<EventDetailSkeleton />}>
+            <EventDetailLoader id={id} />
+          </Suspense>
         </div>
       </section>
     </main>

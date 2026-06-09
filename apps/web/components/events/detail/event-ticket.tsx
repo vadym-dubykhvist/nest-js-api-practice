@@ -13,7 +13,7 @@ import { useUnregisterEvent } from '@/lib/events/hooks';
 import { RateWidget } from './rate-widget';
 import { RegisterModal } from './register-modal';
 
-export function EventTicket({ event }: { event: Event }) {
+export function EventTicket({ event, now }: { event: Event; now: number }) {
   const [regOpen, setRegOpen] = useState(false);
   const { data: user } = useCurrentUser();
   const unregister = useUnregisterEvent(event.id);
@@ -21,7 +21,7 @@ export function EventTicket({ event }: { event: Event }) {
   const start = new Date(event.startDate);
   const end = new Date(event.endDate);
   const cap = capacityOf(event);
-  const isPast = end.getTime() < Date.now();
+  const isPast = end.getTime() < now;
 
   return (
     <aside className="card sticky top-[100px] overflow-hidden rounded-[20px] border-border-strong">
@@ -57,7 +57,10 @@ export function EventTicket({ event }: { event: Event }) {
       <div className="p-[20px_22px_22px]">
         {event.registered ? (
           <>
-            <div className="btn btn-outline btn-block pointer-events-none border-primary text-primary">
+            <div
+              role="status"
+              className="btn btn-outline btn-block pointer-events-none border-primary text-primary"
+            >
               Registered ✓
             </div>
             <button

@@ -4,8 +4,8 @@ import type { Event } from '@events/shared-types';
 
 import { statusOf } from '@/lib/events/event-format';
 
-export function EventMeta({ event }: { event: Event }) {
-  const status = statusOf(event, Date.now());
+export function EventMeta({ event, now }: { event: Event; now: number }) {
+  const status = statusOf(event, now);
 
   return (
     <>

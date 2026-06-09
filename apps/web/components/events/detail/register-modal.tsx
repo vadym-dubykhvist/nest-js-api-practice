@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { X } from 'lucide-react';
 
 import type { Event, RegisterEventInput } from '@events/shared-types';
 
+import { withNext } from '@/lib/auth/redirect';
 import { capacityOf, timeFmt, weekdayFmt } from '@/lib/events/event-format';
 import { useRegisterEvent } from '@/lib/events/hooks';
 
@@ -25,6 +27,7 @@ export function RegisterModal({
   onClose: () => void;
 }) {
   const register = useRegisterEvent(event.id);
+  const pathname = usePathname();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [note, setNote] = useState('');
@@ -122,7 +125,7 @@ export function RegisterModal({
         {!isLoggedIn && (
           <div className="mt-3 text-center font-mono text-[0.74rem] text-muted-foreground">
             Have an account?{' '}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link href={withNext('/login', pathname)} className="text-primary hover:underline">
               Sign in
             </Link>
           </div>
