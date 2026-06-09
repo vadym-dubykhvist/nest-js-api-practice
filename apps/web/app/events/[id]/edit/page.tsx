@@ -9,7 +9,10 @@ import { getServerToken } from '@/lib/auth/token.server';
 
 type Params = { params: Promise<{ id: string }> };
 
-export const metadata: Metadata = { title: 'Edit event · Eventino' };
+export const metadata: Metadata = {
+  title: 'Edit event',
+  robots: { index: false },
+};
 
 export default async function EditEventPage({ params }: Params) {
   const { id: idParam } = await params;

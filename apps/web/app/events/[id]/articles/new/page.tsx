@@ -10,7 +10,10 @@ import { getServerToken } from '@/lib/auth/token.server';
 
 type Params = { params: Promise<{ id: string }> };
 
-export const metadata: Metadata = { title: 'New article · Eventino' };
+export const metadata: Metadata = {
+  title: 'New article',
+  robots: { index: false },
+};
 
 export default async function NewArticlePage({ params }: Params) {
   const { id: idParam } = await params;

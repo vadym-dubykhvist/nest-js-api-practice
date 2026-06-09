@@ -13,7 +13,10 @@ import {
 } from '@/lib/articles/search-params';
 import { getQueryClient } from '@/lib/get-query-client';
 
-export const metadata: Metadata = { title: 'Articles · Eventino' };
+export const metadata: Metadata = {
+  title: 'Articles',
+  description: 'Read what the community is publishing about events.',
+};
 
 export default async function ArticlesPage({
   searchParams,

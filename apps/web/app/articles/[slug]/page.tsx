@@ -14,7 +14,20 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   try {
     const { article } = await loadArticle(slug, await getServerToken());
-    return { title: `${article.title} · Eventino` };
+    const url = `/articles/${slug}`;
+    return {
+      title: article.title,
+      description: article.description,
+      alternates: { canonical: url },
+      openGraph: {
+        title: article.title,
+        description: article.description,
+        type: 'article',
+        url,
+        publishedTime: article.createdAt,
+        authors: [`@${article.author.username}`],
+      },
+    };
   } catch {
     return {};
   }

@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 
 import { ProfileForm } from '@/components/auth/profile-form';
 
-export const metadata: Metadata = { title: 'Edit profile · Eventino' };
+export const metadata: Metadata = {
+  title: 'Edit profile',
+  robots: { index: false },
+};
 
 export default function SettingsPage() {
   return (
