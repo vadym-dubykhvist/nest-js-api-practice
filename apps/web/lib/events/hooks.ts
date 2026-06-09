@@ -10,11 +10,13 @@ import {
 
 import { api } from '@events/api-client';
 import type {
+  CreateEventInput,
   EventResponse,
   EventsQuery,
   EventsResponse,
   RegisterEventInput,
   TagsResponse,
+  UpdateEventInput,
 } from '@events/shared-types';
 
 import { getToken } from '@/lib/auth/token';
@@ -64,6 +66,26 @@ export function useTags(): UseSuspenseQueryResult<TagsResponse, Error> {
 function useEventInvalidation() {
   const queryClient = useQueryClient();
   return () => queryClient.invalidateQueries({ queryKey: eventKeys.all });
+}
+
+/** Create an event (authenticated). Invalidates the events tree on success. */
+export function useCreateEvent() {
+  const invalidate = useEventInvalidation();
+  return useMutation({
+    mutationFn: (input: CreateEventInput) =>
+      api.events.create(input, { token: getToken() ?? undefined }),
+    onSuccess: invalidate,
+  });
+}
+
+/** Update an event (author only — the backend 403s otherwise). */
+export function useUpdateEvent(id: number) {
+  const invalidate = useEventInvalidation();
+  return useMutation({
+    mutationFn: (input: UpdateEventInput) =>
+      api.events.update(id, input, { token: getToken() ?? undefined }),
+    onSuccess: invalidate,
+  });
 }
 
 /** Register works for guests (email+name in input) and authed users (token). */

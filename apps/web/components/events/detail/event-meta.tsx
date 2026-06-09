@@ -2,6 +2,7 @@ import { Star } from 'lucide-react';
 
 import type { Event } from '@events/shared-types';
 
+import { Avatar } from '@/components/avatar';
 import { statusOf } from '@/lib/events/event-format';
 
 export function EventMeta({ event, now }: { event: Event; now: number }) {
@@ -28,9 +29,12 @@ export function EventMeta({ event, now }: { event: Event; now: number }) {
       </div>
 
       <div className="my-5 flex items-center gap-3">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-live to-rating text-sm font-bold uppercase text-background">
-          {event.author.username.slice(0, 2)}
-        </span>
+        <Avatar
+          username={event.author.username}
+          image={event.author.image}
+          className="h-10 w-10 rounded-full bg-gradient-to-br from-live to-rating text-background"
+          textClassName="text-sm"
+        />
         <div>
           <div className="font-semibold">Hosted by {event.author.username}</div>
           <div className="font-mono text-[0.76rem] text-muted-foreground">

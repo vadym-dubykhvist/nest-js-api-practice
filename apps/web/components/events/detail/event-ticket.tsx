@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 import { MapPin } from 'lucide-react';
 
@@ -22,6 +23,7 @@ export function EventTicket({ event, now }: { event: Event; now: number }) {
   const end = new Date(event.endDate);
   const cap = capacityOf(event);
   const isPast = end.getTime() < now;
+  const isAuthor = user?.username === event.author.username;
 
   return (
     <aside className="card sticky top-[100px] overflow-hidden rounded-[20px] border-border-strong">
@@ -94,6 +96,15 @@ export function EventTicket({ event, now }: { event: Event; now: number }) {
         )}
 
         <RateWidget event={event} />
+
+        {isAuthor && (
+          <Link
+            href={`/events/${event.id}/edit`}
+            className="btn btn-ghost btn-block mt-2.5 text-muted-foreground"
+          >
+            Edit event
+          </Link>
+        )}
       </div>
 
       <RegisterModal

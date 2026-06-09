@@ -4,8 +4,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { ArrowUpRight, LogOut, Search } from 'lucide-react';
+import { ArrowUpRight, LogOut, Plus, Search } from 'lucide-react';
 
+import { Avatar } from '@/components/avatar';
 import { useCurrentUser, useLogout } from '@/lib/auth/hooks';
 import { withNext } from '@/lib/auth/redirect';
 
@@ -62,6 +63,21 @@ export function Nav() {
           Eventino
         </Link>
 
+        <nav className="hidden items-center gap-4 sm:flex">
+          <Link
+            href="/events"
+            className="text-sm font-semibold text-muted-foreground transition hover:text-foreground"
+          >
+            Events
+          </Link>
+          <Link
+            href="/articles"
+            className="text-sm font-semibold text-muted-foreground transition hover:text-foreground"
+          >
+            Articles
+          </Link>
+        </nav>
+
         <form
           onSubmit={onSubmit}
           className="ml-2 hidden max-w-[330px] flex-1 items-center gap-2 rounded-xl border border-border-strong bg-card px-3.5 py-2.5 text-muted-foreground focus-within:border-foreground sm:flex"
@@ -84,12 +100,22 @@ export function Nav() {
         {user ? (
           <div className="flex items-center gap-3">
             <Link
+              href="/events/new"
+              className="hidden items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2.5 text-sm font-bold text-primary-foreground transition hover:shadow-[0_0_0_1px_rgba(205,255,58,0.25),0_10px_40px_-8px_rgba(205,255,58,0.35)] sm:inline-flex"
+            >
+              <Plus className="h-4 w-4" />
+              Create
+            </Link>
+            <Link
               href={`/profile/${user.username}`}
               className="flex items-center gap-2"
             >
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-elevated text-xs font-bold uppercase">
-                {user.username.slice(0, 2)}
-              </span>
+              <Avatar
+                username={user.username}
+                image={user.image}
+                className="h-9 w-9 rounded-full bg-elevated"
+                textClassName="text-xs"
+              />
               <span className="hidden text-sm font-semibold sm:inline">
                 {user.username}
               </span>

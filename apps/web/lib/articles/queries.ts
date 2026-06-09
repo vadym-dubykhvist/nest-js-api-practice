@@ -39,3 +39,20 @@ export function authorArticlesQueryOptions(
     enabled: !!username,
   });
 }
+
+/** Single article by slug — token-aware so the backend computes `favorited`. */
+export function articleQueryOptions(slug: string, token?: string | null) {
+  return queryOptions({
+    queryKey: articleKeys.detail(slug),
+    queryFn: () => api.articles.get(slug, token ? { token } : undefined),
+    enabled: !!slug,
+  });
+}
+
+/** Global article list (the /articles feed), paginated via the query. */
+export function articlesQueryOptions(query?: ArticlesQuery) {
+  return queryOptions({
+    queryKey: articleKeys.list(query),
+    queryFn: () => api.articles.list(query),
+  });
+}

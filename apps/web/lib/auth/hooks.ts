@@ -5,10 +5,16 @@ import { useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '@events/api-client';
-import type { CreateUserInput, LoginUserInput } from '@events/shared-types';
+import type {
+  CreateUserInput,
+  LoginUserInput,
+  ProfileResponse,
+  UpdateUserInput,
+} from '@events/shared-types';
 
 import { authKeys, currentUserQueryOptions } from '@/lib/auth/queries';
 import { clearToken, getToken, setToken } from '@/lib/auth/token';
+import { profileKeys } from '@/lib/profile/queries';
 
 /**
  * Client auth hooks. The mutations only own data side-effects (token + cache);
@@ -43,6 +49,31 @@ export function useRegister() {
     onSuccess: (user) => {
       setToken(user.token);
       queryClient.setQueryData(authKeys.currentUser, user);
+    },
+  });
+}
+
+/** Update the current user's profile (email / bio / image). */
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: UpdateUserInput) =>
+      api.auth
+        .update(input, { token: getToken() ?? undefined })
+        .then((res) => res.user),
+    onSuccess: (user) => {
+      // The response carries a fresh token + the updated profile.
+      setToken(user.token);
+      queryClient.setQueryData(authKeys.currentUser, user);
+      // Keep the separately-cached profile page in sync so edits show without a
+      // reload (useUpdateUser otherwise only knows the current-user cache).
+      queryClient.setQueryData<ProfileResponse>(
+        profileKeys.detail(user.username),
+        (old) =>
+          old
+            ? { profile: { ...old.profile, bio: user.bio, image: user.image } }
+            : old,
+      );
     },
   });
 }

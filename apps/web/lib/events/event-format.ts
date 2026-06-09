@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 import type { Event } from '@events/shared-types';
 
 /**
@@ -15,6 +17,17 @@ export const POSTERS = [
 
 /** Deterministic by id so an event always renders the same colour. */
 export const posterFor = (id: number) => POSTERS[id % POSTERS.length];
+
+/** Cover background: the event's uploaded image, else its deterministic gradient. */
+export function coverStyle(event: Pick<Event, 'id' | 'image'>): CSSProperties {
+  return event.image
+    ? {
+        backgroundImage: `url("${event.image}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
+    : { backgroundImage: posterFor(event.id) };
+}
 
 const fmt = (o: Intl.DateTimeFormatOptions) =>
   new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', ...o });

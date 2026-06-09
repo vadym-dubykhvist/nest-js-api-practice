@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 
-import { Heart, MessageSquare } from 'lucide-react';
+import { Heart, MessageSquare, Plus } from 'lucide-react';
+
+import type { Event } from '@events/shared-types';
 
 import {
   useEventArticlesSuspense,
@@ -10,13 +12,15 @@ import {
 } from '@/lib/articles/hooks';
 import { useCurrentUser } from '@/lib/auth/hooks';
 
-export function EventArticles({ eventId }: { eventId: number }) {
-  const { data } = useEventArticlesSuspense(eventId);
+export function EventArticles({ event }: { event: Event }) {
+  const { data } = useEventArticlesSuspense(event.id);
   const { data: user } = useCurrentUser();
-  const toggleFavorite = useToggleArticleFavorite(eventId);
+  const toggleFavorite = useToggleArticleFavorite(event.id);
 
   const articles = data.articles;
-  if (articles.length === 0) return null;
+  // Only the host or a registered attendee may write (mirrors the backend rule).
+  const canWrite =
+    !!user && (user.username === event.author.username || !!event.registered);
 
   return (
     <>
@@ -25,10 +29,24 @@ export function EventArticles({ eventId }: { eventId: number }) {
         <span className="font-mono text-[0.85rem] text-primary">
           / {String(articles.length).padStart(2, '0')}
         </span>
+        {canWrite && (
+          <Link
+            href={`/events/${event.id}/articles/new`}
+            className="ml-auto inline-flex items-center gap-1.5 self-center font-mono text-[0.74rem] normal-case text-muted-foreground transition hover:text-foreground"
+          >
+            <Plus width={14} height={14} />
+            Write
+          </Link>
+        )}
       </div>
 
-      <div className="flex max-w-[580px] flex-col gap-3">
-        {articles.map((article) => (
+      {articles.length === 0 ? (
+        <p className="font-mono text-[0.82rem] text-muted-foreground">
+          No articles yet — be the first to write one.
+        </p>
+      ) : (
+        <div className="flex max-w-[580px] flex-col gap-3">
+          {articles.map((article) => (
           <div
             key={article.slug}
             // `relative` anchors the title's stretched link (after:inset-0); the
@@ -82,8 +100,9 @@ export function EventArticles({ eventId }: { eventId: number }) {
               )}
             </div>
           </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </>
   );
 }

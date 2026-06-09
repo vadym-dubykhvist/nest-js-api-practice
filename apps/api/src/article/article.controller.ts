@@ -199,8 +199,12 @@ export class ArticleController {
   })
   async getArticle(
     @Param('slug') slug: string,
+    @User('id') currentUserId: number,
   ): Promise<ArticleResponseInterface> {
-    const article = await this.articleService.getArticle(slug);
+    const article = await this.articleService.getArticleForUser(
+      slug,
+      currentUserId,
+    );
 
     return this.articleService.buildArticleResponse(article);
   }

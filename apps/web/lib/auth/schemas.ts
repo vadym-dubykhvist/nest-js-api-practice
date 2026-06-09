@@ -17,3 +17,12 @@ export const registerSchema = z.object({
   password: z.string().min(8, 'At least 8 characters'),
 });
 export type RegisterValues = z.infer<typeof registerSchema>;
+
+// PATCH /user accepts email (required) + optional bio/image; username/password
+// aren't editable via this endpoint.
+export const editProfileSchema = z.object({
+  email: z.string().min(1, 'Email is required').email('Enter a valid email'),
+  bio: z.string().optional(),
+  image: z.string().optional(),
+});
+export type EditProfileValues = z.infer<typeof editProfileSchema>;

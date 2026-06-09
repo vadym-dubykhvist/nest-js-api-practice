@@ -6,8 +6,8 @@ import type { Event } from '@events/shared-types';
 
 import {
   capacityOf,
+  coverStyle,
   monthDayFmt,
-  posterFor,
   statusOf,
   timeFmt,
 } from '@/lib/events/event-format';
@@ -28,12 +28,17 @@ export function EventCard({ event, now }: { event: Event; now: number }) {
     >
       <div
         className="relative flex aspect-[4/5] flex-col justify-between p-[18px] text-white"
-        style={{ backgroundImage: posterFor(event.id) }}
+        style={coverStyle(event)}
       >
-        <span className="self-start rounded-[8px] bg-black/30 px-2.5 py-[5px] font-mono text-[0.72rem] font-bold tracking-[0.08em] backdrop-blur-sm">
+        {event.image && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10" />
+        )}
+        <span className="relative self-start rounded-[8px] bg-black/30 px-2.5 py-[5px] font-mono text-[0.72rem] font-bold tracking-[0.08em] backdrop-blur-sm">
           {monthDayFmt.format(start).toUpperCase()}
         </span>
-        <h3 className="anton text-[2.3rem] leading-[0.9]">{event.title}</h3>
+        <h3 className="anton relative text-[2.3rem] leading-[0.9]">
+          {event.title}
+        </h3>
       </div>
 
       <div className="flex flex-col gap-3 p-[16px_18px_18px]">

@@ -57,4 +57,7 @@ export class ArticleEntity {
 
   // Not persisted: mapped per-query by loadRelationCountAndMap.
   commentsCount?: number;
+
+  // Not persisted: whether the current viewer has favorited this article.
+  favorited?: boolean;
 }

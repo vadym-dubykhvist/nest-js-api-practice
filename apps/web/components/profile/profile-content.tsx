@@ -4,8 +4,11 @@ import { useState } from 'react';
 
 import type { EventsQuery } from '@events/shared-types';
 
+import {
+  ArticleCard,
+  articlesGridClassName,
+} from '@/components/articles/article-card';
 import { EventCard, eventsGridClassName } from '@/components/events/event-card';
-import { ProfileArticleCard } from '@/components/profile/profile-article-card';
 import { useAuthorArticlesSuspense } from '@/lib/articles/hooks';
 import { useEventsSuspense } from '@/lib/events/hooks';
 import { useNow } from '@/lib/use-now';
@@ -86,9 +89,9 @@ function ArticlesGrid({ username }: { username: string }) {
   }
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-5">
+    <div className={articlesGridClassName}>
       {data.articles.map((article) => (
-        <ProfileArticleCard key={article.id} article={article} />
+        <ArticleCard key={article.id} article={article} />
       ))}
     </div>
   );

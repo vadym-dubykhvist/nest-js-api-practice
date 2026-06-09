@@ -257,16 +257,8 @@ export class EventService {
     dto: RegisterEventDto,
     currentUser: UserEntity | null,
   ): Promise<RegistrationResponseInterface> {
-    const event = await this.findById(eventId);
-
-    if (event.maxGuests > 0 && event.registeredCount >= event.maxGuests) {
-      this.exceptionService.throwHttpException(
-        'event',
-        'is full',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
+    // Resolve identity first (no DB work): authed users use their profile;
+    // guests must supply email + name.
     let email: string;
     let name: string;
 
@@ -285,36 +277,63 @@ export class EventService {
       name = dto.name;
     }
 
-    // One registration per email per event — covers both guests (the bug: same
-    // email twice) and authed users re-registering.
-    const existing = await this.registrationRepository.findOne({
-      where: { event: { id: event.id }, email },
-    });
-    if (existing) {
-      this.exceptionService.throwHttpException(
-        'registration',
-        'already registered',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const registration = new RegistrationEntity();
-    registration.email = email;
-    registration.name = name;
-    registration.additionalInfo = dto.additionalInfo ?? null;
-    registration.event = event;
-    registration.user = currentUser;
-
-    // The findOne above is the friendly path; the UNIQUE(eventId, email) index
-    // is the backstop for two concurrent requests that both pass it. Translate
-    // its violation into the same error instead of leaking a 500.
     try {
-      const saved = await this.registrationRepository.save(registration);
-      event.registeredCount++;
-      await this.eventRepository.save(event);
+      // Lock the event row (SELECT ... FOR UPDATE via QueryBuilder so the lock
+      // doesn't hit author's outer join) so concurrent registrations for the
+      // same event serialize — the capacity check and registeredCount bump
+      // can't race into an over-book or a lost update.
+      const saved = await this.dataSource.transaction(async (manager) => {
+        const event = await manager
+          .createQueryBuilder(EventEntity, 'event')
+          .setLock('pessimistic_write')
+          .where('event.id = :id', { id: eventId })
+          .getOne();
+        if (!event) {
+          this.exceptionService.throwHttpException(
+            'event',
+            'not found',
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        if (event.maxGuests > 0 && event.registeredCount >= event.maxGuests) {
+          this.exceptionService.throwHttpException(
+            'event',
+            'is full',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        // One registration per email per event (friendly path; the UNIQUE
+        // index is the backstop).
+        const existing = await manager.findOne(RegistrationEntity, {
+          where: { event: { id: event.id }, email },
+        });
+        if (existing) {
+          this.exceptionService.throwHttpException(
+            'registration',
+            'already registered',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        const registration = new RegistrationEntity();
+        registration.email = email;
+        registration.name = name;
+        registration.additionalInfo = dto.additionalInfo ?? null;
+        registration.event = event;
+        registration.user = currentUser;
+        const persisted = await manager.save(registration);
+
+        event.registeredCount++;
+        await manager.save(event);
+
+        return persisted;
+      });
 
       return { registration: saved };
     } catch (error) {
+      // UNIQUE(eventId, email) violation, if two requests still slip past.
       if (
         error instanceof QueryFailedError &&
         (error.driverError as { code?: string }).code === '23505'

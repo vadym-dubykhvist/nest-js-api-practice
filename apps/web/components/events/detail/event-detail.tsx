@@ -28,7 +28,7 @@ export function EventDetail({
         <EventHero event={event} />
         <EventMeta event={event} now={now} />
         <Suspense fallback={<EventArticlesSkeleton />}>
-          <EventArticles eventId={id} />
+          <EventArticles event={event} />
         </Suspense>
       </div>
       <EventTicket event={event} now={now} />

@@ -1,6 +1,10 @@
 'use client';
 
+import Link from 'next/link';
+
+import { Avatar } from '@/components/avatar';
 import { FollowButton } from '@/components/profile/follow-button';
+import { useCurrentUser } from '@/lib/auth/hooks';
 import { useEvents } from '@/lib/events/hooks';
 import { useProfileSuspense } from '@/lib/profile/hooks';
 
@@ -10,7 +14,9 @@ const AVATAR = 'linear-gradient(135deg,#ff3d8b,#ffc53a)';
 
 export function ProfileHeader({ username }: { username: string }) {
   const { data } = useProfileSuspense(username);
+  const { data: user } = useCurrentUser();
   const profile = data.profile;
+  const isOwn = user?.username === profile.username;
 
   // Counts for the stat line — read from the same prefetched list queries the
   // tabs use, so they're already in cache (no extra request, no flash).
@@ -26,21 +32,13 @@ export function ProfileHeader({ username }: { username: string }) {
 
       {/* avatar overlaps up into the banner; name sits beside it, actions right */}
       <div className="-mt-14 flex flex-wrap items-end gap-[22px] px-1.5">
-        <div
-          className="grid h-28 w-28 shrink-0 place-items-center overflow-hidden rounded-[30px] border-4 border-background text-[2rem] font-bold uppercase text-background shadow-[0_10px_30px_-10px_rgba(0,0,0,0.7)] sm:h-32 sm:w-32"
+        <Avatar
+          username={profile.username}
+          image={profile.image}
+          className="h-28 w-28 rounded-[30px] border-4 border-background text-background shadow-[0_10px_30px_-10px_rgba(0,0,0,0.7)] sm:h-32 sm:w-32"
+          textClassName="text-[2rem]"
           style={{ backgroundImage: AVATAR }}
-        >
-          {profile.image ? (
-            // eslint-disable-next-line @next/next/no-img-element -- user avatar, may be external
-            <img
-              src={profile.image}
-              alt=""
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            profile.username.slice(0, 2)
-          )}
-        </div>
+        />
 
         <div className="min-w-[160px] flex-1 translate-y-2">
           <h2 className="anton text-[clamp(1.9rem,4vw,2.6rem)] leading-[0.95]">
@@ -52,7 +50,13 @@ export function ProfileHeader({ username }: { username: string }) {
         </div>
 
         <div className="flex shrink-0 items-end gap-2.5 pb-2">
-          <FollowButton profile={profile} />
+          {isOwn ? (
+            <Link href="/settings" className="btn btn-outline">
+              Edit profile
+            </Link>
+          ) : (
+            <FollowButton profile={profile} />
+          )}
         </div>
       </div>
 
