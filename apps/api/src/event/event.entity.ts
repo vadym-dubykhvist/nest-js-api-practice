@@ -56,4 +56,9 @@ export class EventEntity {
 
   @ManyToOne(() => UserEntity, { eager: true })
   author: UserEntity;
+
+  // --- Not persisted: computed per-request by findByIdForUser (single event). ---
+  ratingsCount?: number;
+  registered?: boolean;
+  myRating?: number | null;
 }

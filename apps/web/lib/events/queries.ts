@@ -25,11 +25,22 @@ export function eventsQueryOptions(query?: EventsQuery) {
   });
 }
 
-export function eventQueryOptions(id: number) {
+/**
+ * Single event, enriched with per-user fields (registered, myRating) by the
+ * backend. Token-aware like currentUserQueryOptions: the server passes the
+ * cookie token at prefetch, the client hook passes it from the browser cookie —
+ * same key both sides, so SSR + hydration stay consistent. queryClient.clear()
+ * on logout drops the personalized copy.
+ */
+export function eventQueryOptions(id: number, token?: string | null) {
   return queryOptions({
     queryKey: eventKeys.detail(id),
-    queryFn: () => api.events.get(id),
+    queryFn: () => api.events.get(id, token ? { token } : undefined),
     enabled: Number.isFinite(id),
+    // Keep the live "going" count (and rating) fresh while the page is open.
+    // Client-only: SSR prefetch fetches once; the browser observer polls every
+    // 15s, in the foreground only (default refetchIntervalInBackground: false).
+    refetchInterval: 15_000,
   });
 }
 

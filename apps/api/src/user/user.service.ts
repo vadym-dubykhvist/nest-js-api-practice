@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { ExceptionService } from '@app/shared/services/exception.service';
+import { mergeDefined } from '@app/shared/utils/merge-defined';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
 import { LoginUserDto } from '@app/user/dto/loginUser.dto';
 import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
@@ -93,7 +94,7 @@ export class UserService {
     const user = await this.findById(id);
     if (!user) this.exceptionService.throwHttpException('user', 'not found');
 
-    Object.assign(user, updateUserDto);
+    mergeDefined(user, updateUserDto);
     return await this.userRepository.save(user);
   }
 

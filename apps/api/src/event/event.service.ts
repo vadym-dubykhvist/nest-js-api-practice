@@ -1,4 +1,10 @@
-import { DataSource, DeleteResult, In, Repository } from 'typeorm';
+import {
+  DataSource,
+  DeleteResult,
+  In,
+  QueryFailedError,
+  Repository,
+} from 'typeorm';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -16,6 +22,7 @@ import {
   RegistrationResponseInterface,
 } from '@app/event/types/event.interfaces';
 import { ExceptionService } from '@app/shared/services/exception.service';
+import { mergeDefined } from '@app/shared/utils/merge-defined';
 import { TagEntity } from '@app/tag/tag.entity';
 import { UserEntity } from '@app/user/user.entity';
 
@@ -74,11 +81,8 @@ export class EventService {
 
     const eventsCount = await qb.getCount();
 
-    // Query-string params arrive as strings; TypeORM's limit/offset need numbers.
-    const limit = Number(query.limit);
-    const offset = Number(query.offset);
-    if (Number.isFinite(limit) && limit > 0) qb.limit(limit);
-    if (Number.isFinite(offset) && offset > 0) qb.offset(offset);
+    if (query.limit) qb.limit(query.limit);
+    if (query.offset) qb.offset(query.offset);
 
     const events = await qb.getMany();
     return { events, eventsCount };
@@ -93,6 +97,37 @@ export class EventService {
         HttpStatus.NOT_FOUND,
       );
     }
+    return event;
+  }
+
+  /**
+   * Single-event read enriched with per-user state for the detail page: total
+   * ratings, whether `currentUserId` is registered, and their own score.
+   */
+  async findByIdForUser(
+    id: number,
+    currentUserId?: number,
+  ): Promise<EventEntity> {
+    const event = await this.findById(id);
+
+    event.ratingsCount = await this.ratingRepository.count({
+      where: { event: { id: event.id } },
+    });
+
+    if (currentUserId) {
+      const registration = await this.registrationRepository.findOne({
+        where: { event: { id: event.id }, user: { id: currentUserId } },
+      });
+      const rating = await this.ratingRepository.findOne({
+        where: { event: { id: event.id }, user: { id: currentUserId } },
+      });
+      event.registered = Boolean(registration);
+      event.myRating = rating?.score ?? null;
+    } else {
+      event.registered = false;
+      event.myRating = null;
+    }
+
     return event;
   }
 
@@ -164,7 +199,7 @@ export class EventService {
       );
     }
 
-    Object.assign(event, dto);
+    mergeDefined(event, dto);
     if (dto.startDate) event.startDate = new Date(dto.startDate);
     if (dto.endDate) event.endDate = new Date(dto.endDate);
 
@@ -215,16 +250,6 @@ export class EventService {
     let name: string;
 
     if (currentUser) {
-      const existing = await this.registrationRepository.findOne({
-        where: { event: { id: event.id }, user: { id: currentUser.id } },
-      });
-      if (existing) {
-        this.exceptionService.throwHttpException(
-          'registration',
-          'already registered',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
       email = currentUser.email;
       name = currentUser.username;
     } else {
@@ -239,6 +264,19 @@ export class EventService {
       name = dto.name;
     }
 
+    // One registration per email per event — covers both guests (the bug: same
+    // email twice) and authed users re-registering.
+    const existing = await this.registrationRepository.findOne({
+      where: { event: { id: event.id }, email },
+    });
+    if (existing) {
+      this.exceptionService.throwHttpException(
+        'registration',
+        'already registered',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const registration = new RegistrationEntity();
     registration.email = email;
     registration.name = name;
@@ -246,11 +284,28 @@ export class EventService {
     registration.event = event;
     registration.user = currentUser;
 
-    const saved = await this.registrationRepository.save(registration);
-    event.registeredCount++;
-    await this.eventRepository.save(event);
+    // The findOne above is the friendly path; the UNIQUE(eventId, email) index
+    // is the backstop for two concurrent requests that both pass it. Translate
+    // its violation into the same error instead of leaking a 500.
+    try {
+      const saved = await this.registrationRepository.save(registration);
+      event.registeredCount++;
+      await this.eventRepository.save(event);
 
-    return { registration: saved };
+      return { registration: saved };
+    } catch (error) {
+      if (
+        error instanceof QueryFailedError &&
+        (error.driverError as { code?: string }).code === '23505'
+      ) {
+        this.exceptionService.throwHttpException(
+          'registration',
+          'already registered',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw error;
+    }
   }
 
   async unregister(eventId: number, currentUserId: number): Promise<void> {

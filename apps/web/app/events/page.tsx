@@ -50,7 +50,7 @@ export default async function EventsPage({
             <EventsFilter />
 
             <Suspense fallback={<EventsGridSkeleton />}>
-              <EventsList query={query} />
+              <EventsList query={query} serverNow={Date.now()} />
             </Suspense>
           </HydrationBoundary>
         </div>

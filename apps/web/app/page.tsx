@@ -1,3 +1,7 @@
+import Link from 'next/link';
+
+import { ArrowRight } from 'lucide-react';
+
 import { api } from '@events/api-client';
 import type { Event } from '@events/shared-types';
 
@@ -25,6 +29,10 @@ export default async function HomePage() {
           apps/web scaffold ready — start building the frontend in{' '}
           <code className="rounded bg-black/5 px-1 py-0.5">apps/web/app</code>.
         </p>
+        <Link href="/events" className="btn btn-acid btn-lg mt-5 inline-flex">
+          See events
+          <ArrowRight width={16} height={16} />
+        </Link>
       </header>
 
       {error ? (

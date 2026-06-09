@@ -60,8 +60,12 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   author: Author;
-  /** Present only if the backend B3 enhancement is implemented. */
+  /** Total number of ratings. Only on the single-event endpoint. */
+  ratingsCount?: number;
+  /** Whether the current user is registered. Only on the single-event endpoint. */
   registered?: boolean;
+  /** The current user's own rating (null if not rated). Only on the single-event endpoint. */
+  myRating?: number | null;
 }
 
 export interface Registration {
@@ -92,6 +96,7 @@ export interface Article {
   body: string;
   tagList: string[];
   favoritesCount: number;
+  commentsCount?: number;
   favorited?: boolean;
   createdAt: string;
   updatedAt: string;

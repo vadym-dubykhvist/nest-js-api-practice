@@ -156,7 +156,19 @@ Authorization: Token <jwt_token>
 
 ## Database
 
-Migrations are located in `src/migrations/`.
+### Migrations
+
+Migrations live in `apps/api/src/migrations/`. Apply them with `pnpm db:migrate`
+(see [Scripts](#scripts) for `db:create` / `db:drop` / `db:seed`).
+
+> **Note — `apps/api/tsconfig.typeorm.json`:** the API's base `tsconfig.json` is
+> `nodenext`, which `ts-node` 10.9 can't run through the TypeORM CLI — it stops
+> resolving the `@app/*` path aliases (`TS2307: Cannot find module '@app/...'`)
+> and trips over the nodenext option combo (`TS5109` / `TS5098`). So the `db:*`
+> scripts point `ts-node` at `tsconfig.typeorm.json`, a CommonJS override
+> (`module: commonjs`, `moduleResolution: node`, `transpileOnly`). The app itself
+> keeps the nodenext base config (dev server + `nest build`). If `pnpm db:migrate`
+> ever fails with that `TS2307`, the CLI is being run without the override.
 
 ### Schema Diagram
 

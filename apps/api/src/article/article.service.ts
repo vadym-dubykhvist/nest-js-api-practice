@@ -17,6 +17,7 @@ import {
 import { EventEntity } from '@app/event/event.entity';
 import { FollowEntity } from '@app/profile/follow.entity';
 import { ExceptionService } from '@app/shared/services/exception.service';
+import { mergeDefined } from '@app/shared/utils/merge-defined';
 import { UserEntity } from '@app/user/user.entity';
 
 @Injectable()
@@ -42,7 +43,8 @@ export class ArticleService {
       .getRepository(ArticleEntity)
       .createQueryBuilder('articles')
       .leftJoinAndSelect('articles.author', 'author')
-      .leftJoinAndSelect('articles.event', 'event');
+      .leftJoinAndSelect('articles.event', 'event')
+      .loadRelationCountAndMap('articles.commentsCount', 'articles.comments');
 
     if (query.tag) {
       queryBuilder.andWhere('articles.tagList LIKE :tag', {
@@ -141,6 +143,7 @@ export class ArticleService {
       .getRepository(ArticleEntity)
       .createQueryBuilder('articles')
       .leftJoinAndSelect('articles.author', 'author')
+      .loadRelationCountAndMap('articles.commentsCount', 'articles.comments')
       .where('articles.authorId IN (:...followingUserIds)', {
         followingUserIds,
       });
@@ -245,7 +248,7 @@ export class ArticleService {
       );
     }
 
-    Object.assign(article, updateArticleDto);
+    mergeDefined(article, updateArticleDto);
 
     if (updateArticleDto.title) {
       article.slug = this.getSlug(updateArticleDto.title);

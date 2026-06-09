@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { ArrowUpRight, LogOut, Search } from 'lucide-react';
 
 import { useCurrentUser, useLogout } from '@/lib/auth/hooks';
+import { withNext } from '@/lib/auth/redirect';
 
 /**
  * App header with auth state. Because the current-user query is prefetched on
@@ -14,6 +16,7 @@ import { useCurrentUser, useLogout } from '@/lib/auth/hooks';
 export function Nav() {
   const { data: user } = useCurrentUser();
   const logout = useLogout();
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
@@ -66,13 +69,13 @@ export function Nav() {
         ) : (
           <div className="flex items-center gap-2.5">
             <Link
-              href="/login"
+              href={withNext('/login', pathname)}
               className="rounded-xl border border-border-strong px-4 py-2.5 text-sm font-semibold transition hover:border-foreground"
             >
               Log in
             </Link>
             <Link
-              href="/register"
+              href={withNext('/register', pathname)}
               className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:shadow-[0_0_0_1px_rgba(205,255,58,0.25),0_10px_40px_-8px_rgba(205,255,58,0.35)]"
             >
               Create account <ArrowUpRight className="h-4 w-4" />

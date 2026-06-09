@@ -6,7 +6,6 @@ import {
   Patch,
   Post,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -18,7 +17,6 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 
-import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
 import { User } from '@app/user/decorators/user.decorator';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
 import { LoginUserDto } from '@app/user/dto/loginUser.dto';
@@ -57,7 +55,6 @@ export class UserController {
     status: 422,
     description: 'Validation failed or email/username is already taken.',
   })
-  @UsePipes(new BackendValidationPipe())
   async createUser(
     @Body('user') createUserDto: CreateUserDto,
   ): Promise<UserResponseInterface> {
@@ -91,7 +88,6 @@ export class UserController {
     description:
       'Validation failed or the email/password combination is invalid.',
   })
-  @UsePipes(new BackendValidationPipe())
   async loginUser(
     @Body('user') loginUserDto: LoginUserDto,
   ): Promise<UserResponseInterface> {
@@ -156,7 +152,6 @@ export class UserController {
     status: 422,
     description: 'Validation failed for one or more user fields.',
   })
-  @UsePipes(new BackendValidationPipe())
   async updateUser(
     @Body('user') updateUserDto: UpdateUserDto,
     @User() user: UserEntity,

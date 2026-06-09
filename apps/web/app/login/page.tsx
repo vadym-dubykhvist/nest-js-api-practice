@@ -11,6 +11,7 @@ import { ArrowUpRight, Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
 import { AuthField } from '@/components/auth/auth-field';
 import { AuthLayout } from '@/components/auth/auth-layout';
 import { useLogin } from '@/lib/auth/hooks';
+import { safeNext } from '@/lib/auth/redirect';
 import { loginSchema, type LoginValues } from '@/lib/auth/schemas';
 import { applyApiErrors } from '@/lib/form';
 
@@ -29,7 +30,12 @@ export default function LoginPage() {
   const onSubmit = form.handleSubmit(async (values) => {
     try {
       await login.mutateAsync(values);
-      router.replace('/');
+      // Back to wherever they came from (e.g. an event page) so it re-renders
+      // with the cookie and refetches personalised data — no manual reload.
+      const next = safeNext(
+        new URLSearchParams(window.location.search).get('next'),
+      );
+      router.replace(next);
       router.refresh();
     } catch (error) {
       applyApiErrors(error, form.setError, ['email', 'password']);

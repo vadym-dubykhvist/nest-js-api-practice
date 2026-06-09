@@ -1,5 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from '@app/app.controller';
@@ -11,6 +12,7 @@ import { HealthModule } from '@app/health/health.module';
 import { MetricsModule } from '@app/metrics/metrics.module';
 import ormconfig from '@app/ormconfig';
 import { ProfileModule } from '@app/profile/profile.module';
+import { createGlobalValidationPipe } from '@app/shared/pipes/global-validation.pipe';
 import { TagModule } from '@app/tag/tag.module';
 import { AuthMiddleware } from '@app/user/middlewares/auth.middleware';
 import { UserModule } from '@app/user/user.module';
@@ -29,7 +31,10 @@ import { UserModule } from '@app/user/user.module';
     MetricsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_PIPE, useFactory: createGlobalValidationPipe },
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
