@@ -11,12 +11,18 @@ import { commentsQueryOptions } from '@/lib/comments/queries';
 import { getQueryClient } from '@/lib/get-query-client';
 
 /**
- * Dynamic island for the article page (mirrors event-detail-loader): reads the
- * cookie and fetches the article — both dynamic — inside the page's <Suspense>.
- * Seeds the article into the cache and prefetches the comment tree, which then
- * streams into its own inner <Suspense>. A missing article renders inline.
+ * Dynamic island for the article page (mirrors event-detail-loader): awaits
+ * params, reads the cookie and fetches the article — all dynamic — inside the
+ * page's <Suspense>, so the page shell prerenders (PPR). Seeds the article into
+ * the cache and prefetches the comment tree, which then streams into its own
+ * inner <Suspense>. A missing article renders inline.
  */
-export async function ArticleLoader({ slug }: { slug: string }) {
+export async function ArticleLoader({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const token = await getServerToken();
 
   try {

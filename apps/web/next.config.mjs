@@ -6,7 +6,10 @@ const nextConfig = {
   transpilePackages: ['@events/shared-types', '@events/api-client'],
   // Web is part of an Nx monorepo; trace files from the repo root.
   outputFileTracingRoot: new URL('../../', import.meta.url).pathname,
-  eslint: { ignoreDuringBuilds: true },
+  // PPR is `cacheComponents: true` in Next 16 — global + strict (every dynamic
+  // API access must sit inside <Suspense>). Held off until the remaining
+  // dynamic routes (lists / edit / new / profile) are migrated to islands.
+  // cacheComponents: true,
 };
 
 export default nextConfig;

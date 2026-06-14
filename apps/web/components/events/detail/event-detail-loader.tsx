@@ -11,17 +11,26 @@ import { eventKeys } from '@/lib/events/queries';
 import { getQueryClient } from '@/lib/get-query-client';
 
 /**
- * Dynamic island for the event detail. It reads the auth cookie and fetches the
- * event — both dynamic — so it lives INSIDE the page's <Suspense>: the shell
- * stays static (PPR-ready) and, since this async server component awaits, the
- * skeleton fallback actually streams.
+ * Dynamic island for the event detail. It awaits params and reads the auth
+ * cookie + fetches the event — all dynamic — so it lives INSIDE the page's
+ * <Suspense>: the shell stays static (the page never touches params, so PPR
+ * prerenders it) and, since this async server component awaits, the skeleton
+ * fallback actually streams.
  *
- * A missing event renders <EventNotFound /> inline (soft 404 — status stays 200
- * since the shell already streamed). We deliberately don't call notFound() here:
- * during streaming it doubles up with Next's default not-found UI. loadEvent is
- * deduped with generateMetadata, so it's a single request.
+ * A missing or malformed event renders <EventNotFound /> inline (soft 404 —
+ * status stays 200 since the shell already streamed). We deliberately don't
+ * call notFound() here: during streaming it doubles up with Next's default
+ * not-found UI. loadEvent is deduped with generateMetadata, so it's one request.
  */
-export async function EventDetailLoader({ id }: { id: number }) {
+export async function EventDetailLoader({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id: idParam } = await params;
+  const id = Number(idParam);
+  if (!Number.isInteger(id) || id <= 0) return <EventNotFound />;
+
   const token = await getServerToken();
 
   try {

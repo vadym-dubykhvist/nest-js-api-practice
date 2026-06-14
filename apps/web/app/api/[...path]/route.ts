@@ -6,9 +6,11 @@ import { NextRequest } from 'next/server';
  * RUNTIME-resolved `API_URL`. Reading the env per-request (not at build)
  * is what lets one image point at localhost locally and at the in-cluster
  * API Service when deployed. Same-origin -> no CORS.
+ *
+ * No `dynamic = 'force-dynamic'` needed: the handler reads the live request
+ * (method, headers, body, params), so it's dynamic by nature — and under
+ * Cache Components that route-segment config isn't allowed anyway.
  */
-export const dynamic = 'force-dynamic';
-
 const apiRoot = () =>
   (process.env.API_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 

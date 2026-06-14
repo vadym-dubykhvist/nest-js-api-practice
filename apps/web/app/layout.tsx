@@ -1,15 +1,11 @@
 import '@/app/globals.css';
 
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { Anton, Inter, Space_Mono } from 'next/font/google';
 
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-
 import { Providers } from '@/app/providers';
-import { Nav } from '@/components/nav';
-import { currentUserQueryOptions } from '@/lib/auth/queries';
-import { getServerToken } from '@/lib/auth/token.server';
-import { getQueryClient } from '@/lib/get-query-client';
+import { NavIsland } from '@/components/nav-island';
 import { siteUrl } from '@/lib/site';
 
 // next/font self-hosts the fonts and exposes them as CSS variables that
@@ -46,19 +42,14 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image' },
 };
 
-export default async function RootLayout({
+// Static shell (no dynamic APIs here, so it prerenders). The auth-dependent nav
+// reads the cookie inside <NavIsland>, behind <Suspense> — that's the dynamic
+// hole PPR streams; pages provide their own static shell + islands below.
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Personalize the first paint: read the token on the server and prefetch the
-  // current user, then dehydrate so the client cache starts already-filled.
-  const token = await getServerToken();
-  const queryClient = getQueryClient();
-  if (token) {
-    await queryClient.prefetchQuery(currentUserQueryOptions(token));
-  }
-
   return (
     <html
       lang="en"
@@ -66,10 +57,14 @@ export default async function RootLayout({
     >
       <body>
         <Providers>
-          <HydrationBoundary state={dehydrate(queryClient)}>
-            <Nav />
-            {children}
-          </HydrationBoundary>
+          <Suspense
+            fallback={
+              <header className="sticky top-0 z-40 h-[66px] border-b border-border bg-background/80 backdrop-blur-md" />
+            }
+          >
+            <NavIsland />
+          </Suspense>
+          {children}
         </Providers>
       </body>
     </html>

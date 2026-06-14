@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 
 import { EventDetailLoader } from '@/components/events/detail/event-detail-loader';
 import { EventDetailSkeleton } from '@/components/events/detail/event-detail-skeleton';
@@ -40,20 +39,17 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   }
 }
 
-export default async function EventPage({ params }: Params) {
-  const { id: idParam } = await params;
-  const id = Number(idParam);
-  if (!Number.isInteger(id) || id <= 0) notFound();
-
-  // Static shell; the dynamic island (cookie + event fetch) streams into the
-  // <Suspense> behind the skeleton, so the boundary is real and PPR-ready.
+export default function EventPage({ params }: Params) {
+  // Static shell — it never touches params, so PPR prerenders it. The dynamic
+  // island (params + cookie + event fetch) streams into the <Suspense> behind
+  // the skeleton.
   return (
     <main>
       <section className="pt-[54px] pb-20">
         <div className="wrap">
           <div className="eyebrow mb-4">Event</div>
           <Suspense fallback={<EventDetailSkeleton />}>
-            <EventDetailLoader id={id} />
+            <EventDetailLoader params={params} />
           </Suspense>
         </div>
       </section>

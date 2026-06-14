@@ -33,17 +33,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   }
 }
 
-export default async function ArticlePage({ params }: Params) {
-  const { slug } = await params;
-
-  // Static shell; the island (cookie + article fetch) streams into the
-  // <Suspense> behind the skeleton — same pattern as the event detail page.
+export default function ArticlePage({ params }: Params) {
+  // Static shell — it never touches params, so PPR prerenders it. The island
+  // (params + cookie + article fetch) streams into the <Suspense> behind the
+  // skeleton — same pattern as the event detail page.
   return (
     <main>
       <section className="pt-[54px] pb-24">
         <div className="wrap">
           <Suspense fallback={<ArticleSkeleton />}>
-            <ArticleLoader slug={slug} />
+            <ArticleLoader params={params} />
           </Suspense>
         </div>
       </section>
